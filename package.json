@@ -1,0 +1,23 @@
+{
+  "name": "github-action-x-share",
+  "version": "1.0.0",
+  "description": "A GitHub Action that automatically shares new repository stars on X (Twitter)",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "github-actions",
+    "github",
+    "twitter",
+    "x",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/graphql": "^7.0.2",
+    "twitter-api-v2": "^1.15.2"
+  }
+}
