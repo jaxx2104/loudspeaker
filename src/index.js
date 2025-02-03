@@ -5,7 +5,7 @@ import { join } from 'path';
 
 // 環境変数から認証情報を取得
 const {
-  GITHUB_TOKEN,
+  USER_GITHUB_TOKEN,
   X_API_KEY,
   X_API_SECRET,
   X_ACCESS_TOKEN,
@@ -19,7 +19,7 @@ const [owner, repo] = REPOSITORY.split('/');
 // GraphQL クライアントの初期化
 const graphqlWithAuth = graphql.defaults({
   headers: {
-    authorization: `token ${GITHUB_TOKEN}`,
+    authorization: `token ${USER_GITHUB_TOKEN}`,
   },
 });
 
