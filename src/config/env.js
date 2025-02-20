@@ -7,6 +7,7 @@ const requiredEnvVars = [
   'X_ACCESS_TOKEN',
   'X_ACCESS_SECRET',
   'MISTRAL_API_KEY',
+  'DEEPSEEK_API_KEY',
 ];
 
 // 環境変数の存在確認
@@ -31,5 +32,8 @@ export const config = {
   },
   mistral: {
     apiKey: process.env.MISTRAL_API_KEY,
+  },
+  deepseek: {
+    apiKey: process.env.DEEPSEEK_API_KEY,
   },
 };
