@@ -6,11 +6,11 @@ import 'dotenv/config';
 // 環境変数の存在確認
 const requiredEnvVars = [
   'USER_GITHUB_TOKEN',
+  'USER_GITHUB_NAME',
   'X_API_KEY',
   'X_API_SECRET',
   'X_ACCESS_TOKEN',
   'X_ACCESS_SECRET',
-  'GITHUB_USERNAME'
 ];
 
 for (const envVar of requiredEnvVars) {
@@ -23,11 +23,11 @@ for (const envVar of requiredEnvVars) {
 // 環境変数から認証情報を取得
 const {
   USER_GITHUB_TOKEN,
+  USER_GITHUB_NAME,
   X_API_KEY,
   X_API_SECRET,
   X_ACCESS_TOKEN,
   X_ACCESS_SECRET,
-  GITHUB_USERNAME
 } = process.env;
 
 // GraphQL クライアントの初期化
@@ -89,7 +89,7 @@ async function getRecentStars(lastCheck) {
 
   while (hasNextPage) {
     const response = await graphqlWithAuth(query, {
-      username: GITHUB_USERNAME,
+      username: USER_GITHUB_NAME,
       cursor,
     });
 
