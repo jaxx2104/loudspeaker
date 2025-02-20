@@ -65,7 +65,11 @@ async function getRecentStars(lastCheck) {
   const query = `
     query($username: String!, $cursor: String) {
       user(login: $username) {
-        starredRepositories(first: 100, after: $cursor, orderBy: {field: STARRED_AT, direction: DESC}) {
+        starredRepositories(
+          first: 100, 
+          after: $cursor, 
+          orderBy: {field: STARRED_AT, direction: DESC}
+        ) {
           edges {
             node {
               nameWithOwner
@@ -86,6 +90,9 @@ async function getRecentStars(lastCheck) {
   const stars = [];
   let hasNextPage = true;
   let cursor = null;
+  
+  // 15分前の時刻を計算
+  const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 
   while (hasNextPage) {
     const response = await graphqlWithAuth(query, {
@@ -95,10 +102,10 @@ async function getRecentStars(lastCheck) {
 
     const edges = response.user.starredRepositories.edges;
     
-    // 最後のチェック時刻より新しいStarのみを追加
+    // 15分以内のStarのみを追加
     for (const edge of edges) {
       const starredAt = new Date(edge.starredAt);
-      if (starredAt > lastCheck) {
+      if (starredAt > fifteenMinutesAgo) {
         stars.push({
           repo: edge.node.nameWithOwner,
           description: edge.node.description,
