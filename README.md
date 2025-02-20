@@ -23,6 +23,7 @@ A GitHub Action that automatically shares new repository stars on X (Twitter). I
    - `X_ACCESS_TOKEN`: X API Access Token
    - `X_ACCESS_SECRET`: X API Access Token Secret
    - `MISTRAL_API_KEY`: Mistral AI API Key
+   - `DEEPSEEK_API_KEY`: DeepSeek AI API Key
 
    You can set these secrets in your GitHub repository under Settings > Secrets and variables > Actions.
 
