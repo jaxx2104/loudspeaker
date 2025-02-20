@@ -1,7 +1,8 @@
 import { graphql } from '@octokit/graphql';
 import { TwitterApi } from 'twitter-api-v2';
-import { readFile, writeFile } from 'fs/promises';
 import 'dotenv/config';
+import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { ChatMistralAI } from '@langchain/mistralai';
 
 // 環境変数の存在確認
 const requiredEnvVars = [
@@ -11,6 +12,7 @@ const requiredEnvVars = [
   'X_API_SECRET',
   'X_ACCESS_TOKEN',
   'X_ACCESS_SECRET',
+  'MISTRAL_API_KEY',
 ];
 
 for (const envVar of requiredEnvVars) {
@@ -28,7 +30,20 @@ const {
   X_API_SECRET,
   X_ACCESS_TOKEN,
   X_ACCESS_SECRET,
+  MISTRAL_API_KEY,
 } = process.env;
+
+// LangChainの設定
+const model = new ChatMistralAI({
+  apiKey: MISTRAL_API_KEY,
+  modelName: 'mistral-tiny', // 最も安価なモデル
+  temperature: 0.3,
+});
+
+const prompt = ChatPromptTemplate.fromMessages([
+  ["system", "あなたは優秀なWEBエンジニアです。必ず日本語で要約してください"],
+  ["user", "以下のGitHubリポジトリの説明を30文字以内で簡潔に要約してください。説明: {description}"]
+]);
 
 // GraphQL クライアントの初期化
 const graphqlWithAuth = graphql.defaults({
@@ -44,6 +59,19 @@ const twitterClient = new TwitterApi({
   accessToken: X_ACCESS_TOKEN,
   accessSecret: X_ACCESS_SECRET,
 });
+
+async function summarizeDescription(description) {
+  try {
+    const chain = prompt.pipe(model);
+    const result = await chain.invoke({
+      description: description || "No description provided"
+    });
+    return result.content ? ` - ${result.content}` : '';
+  } catch (error) {
+    console.error("Error in summarizeDescription:", error);
+    return '';
+  }
+}
 
 async function getRecentStars() {
   const query = `
@@ -112,20 +140,26 @@ async function getRecentStars() {
   return stars;
 }
 
-async function postToX(star) {
-  const description = star.description ? `\n${star.description}` : '';
-  const message = `I just starred ${star.repo}${description}\n${star.url}`;
+async function postToX(message) {
+  console.log(message)
   await twitterClient.v2.tweet(message);
 }
 
 async function main() {
   try {
+    // GitHub Star の取得
     const stars = await getRecentStars();
-    
+    console.log(stars)
+
     // 新しい Star を古い順に処理
     for (const star of stars.reverse()) {
-      await postToX(star);
-      console.log(`Posted about star from ${star.repo}`);
+      // LLM によって要約を作成
+      const summary = await summarizeDescription(star.description);
+      const message = `I just starred ${star.repo}${summary}\n${star.url}`;
+      console.log(message)
+      // X に投稿（一旦コメントアウト）
+      // await postToX(message);
+      // console.log(`Posted about star from ${star.repo}`);
     }
   } catch (error) {
     console.error('Error:', error);
