@@ -45,23 +45,7 @@ const twitterClient = new TwitterApi({
   accessSecret: X_ACCESS_SECRET,
 });
 
-// 最後のチェック時刻を保存するファイルのパス
-const LAST_CHECK_FILE = '.last-check';
-
-async function getLastCheckTime() {
-  try {
-    const time = await readFile(LAST_CHECK_FILE, 'utf8');
-    return new Date(time.trim());
-  } catch {
-    return new Date(0); // ファイルが存在しない場合は最古の日時を返す
-  }
-}
-
-async function saveLastCheckTime(time) {
-  await writeFile(LAST_CHECK_FILE, time.toISOString());
-}
-
-async function getRecentStars(lastCheck) {
+async function getRecentStars() {
   const query = `
     query($username: String!, $cursor: String) {
       user(login: $username) {
@@ -136,17 +120,13 @@ async function postToX(star) {
 
 async function main() {
   try {
-    const lastCheck = await getLastCheckTime();
-    const stars = await getRecentStars(lastCheck);
+    const stars = await getRecentStars();
     
     // 新しい Star を古い順に処理
     for (const star of stars.reverse()) {
       await postToX(star);
       console.log(`Posted about star from ${star.repo}`);
     }
-
-    // 最終チェック時刻を更新
-    await saveLastCheckTime(new Date('2025-02-10'));
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);
