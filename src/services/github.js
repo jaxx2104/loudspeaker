@@ -25,11 +25,9 @@ export async function getRecentStars() {
               primaryLanguage {
                 name
               }
-              repository {
-                object(expression: "HEAD:README.md") {
-                  ... on Blob {
-                    text
-                  }
+              object(expression: "HEAD:README.md") {
+                ... on Blob {
+                  text
                 }
               }
             }
@@ -49,7 +47,7 @@ export async function getRecentStars() {
   let cursor = null;
   
   // 15分前の時刻を計算
-  const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+  const fifteenMinutesAgo = new Date(Date.now() - 120 * 60 * 1000);
 
   while (hasNextPage) {
     const response = await graphqlWithAuth(query, {
@@ -68,7 +66,7 @@ export async function getRecentStars() {
           description: edge.node.description,
           url: edge.node.url,
           primaryLanguage: edge.node.primaryLanguage?.name || 'Unknown',
-          readme: edge.node.repository?.object?.text || '',
+          readme: edge.node.object?.text || '',
           starredAt,
         });
       } else {

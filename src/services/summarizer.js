@@ -11,7 +11,7 @@ const prompt = ChatPromptTemplate.fromMessages([
 主要技術: {primaryLanguage}
 README: {readme}
 
-フォーマット: [リポジトリ名] - [主要技術]を使用した[READMEの要約]`]
+フォーマット: I just starred リポジトリ名 - [READMEの要約]`]
 ]);
 
 // Mistral AIの設定
