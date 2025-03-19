@@ -5,7 +5,7 @@ import { config } from '../config/env.js';
 
 // 共通のプロンプトテンプレート
 const prompt = ChatPromptTemplate.fromMessages([
-  ["system", "あなたは優秀なWEBエンジニアです。必ず日本語で要約してください"],
+  ["system", config.systemPrompt],
   ["user", "以下のGitHubリポジトリの説明を20文字以内で簡潔かつ利点が伝わるように要約してください。説明: {description}"]
 ]);
 
