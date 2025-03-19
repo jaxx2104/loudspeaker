@@ -50,7 +50,7 @@ export async function summarizeRepository(repositoryData, modelType = 'deepseek'
       readme: repositoryData.readme || "No README provided"
     });
     
-    return result.content ? ` - ${result.content}` : '';
+    return result.content;
   } catch (error) {
     console.error(`Error in summarizeRepository:`, error);
     // フォールバックとしてMistralを使用
