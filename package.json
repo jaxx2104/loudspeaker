@@ -4,9 +4,7 @@
   "description": "A GitHub Action that automatically shares new repository stars on X (Twitter)",
   "main": "src/index.js",
   "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "keywords": [
     "github-actions",
     "github",
@@ -16,6 +14,7 @@
   ],
   "author": "",
   "license": "MIT",
+  "devDependencies": {},
   "dependencies": {
     "@langchain/core": "^0.3.40",
     "@langchain/deepseek": "^0.0.1",

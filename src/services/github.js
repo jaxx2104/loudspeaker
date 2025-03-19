@@ -22,6 +22,16 @@ export async function getRecentStars() {
               nameWithOwner
               description
               url
+              primaryLanguage {
+                name
+              }
+              repository {
+                object(expression: "HEAD:README.md") {
+                  ... on Blob {
+                    text
+                  }
+                }
+              }
             }
             starredAt
           }
@@ -57,6 +67,8 @@ export async function getRecentStars() {
           repo: edge.node.nameWithOwner,
           description: edge.node.description,
           url: edge.node.url,
+          primaryLanguage: edge.node.primaryLanguage?.name || 'Unknown',
+          readme: edge.node.repository?.object?.text || '',
           starredAt,
         });
       } else {

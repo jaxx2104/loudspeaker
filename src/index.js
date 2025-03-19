@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { getRecentStars } from './services/github.js';
-import { summarizeDescription } from './services/summarizer.js';
+import { summarizeRepository } from './services/summarizer.js';
 import { postToX } from './services/twitter.js';
 
 async function main() {
@@ -12,7 +12,7 @@ async function main() {
     // 新しい Star を古い順に処理
     for (const star of stars.reverse()) {
       // LLM によって要約を作成
-      const summary = await summarizeDescription(star.description);
+      const summary = await summarizeRepository(star);
       const message = `I just starred ${star.repo}${summary}\n${star.url}`;
       // X に投稿
       await postToX(message);
