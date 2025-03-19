@@ -47,7 +47,7 @@ export async function getRecentStars() {
   let cursor = null;
   
   // 15分前の時刻を計算
-  const fifteenMinutesAgo = new Date(Date.now() - 120 * 60 * 1000);
+  const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 
   while (hasNextPage) {
     const response = await graphqlWithAuth(query, {
