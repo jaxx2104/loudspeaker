@@ -1,6 +1,7 @@
 import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { ChatMistralAI } from '@langchain/mistralai';
 import { ChatDeepSeek } from '@langchain/deepseek';
+import { ChatOpenAI } from '@langchain/openai';
 import { config } from '../config/env.js';
 
 // 新しいプロンプトテンプレート
@@ -21,6 +22,16 @@ const mistralModel = new ChatMistralAI({
   temperature: 0.3,
 });
 
+// OpenRouter AIの設定
+const openrouterModel = new ChatOpenAI({
+  apiKey: config.openrouter.apiKey,
+  modelName: 'openai/gpt-5-nano',
+  temperature: 0.3,
+  configuration: {
+    baseURL: 'https://openrouter.ai/api/v1',
+  },
+});
+
 // DeepSeek AIの設定
 const deepseekModel = new ChatDeepSeek({
   apiKey: config.deepseek.apiKey,
@@ -31,6 +42,8 @@ const deepseekModel = new ChatDeepSeek({
 // モデル選択関数
 const getModel = (modelType) => {
   switch (modelType) {
+    case 'openrouter':
+      return openrouterModel;
     case 'deepseek':
       return deepseekModel;
     case 'mistral':
@@ -39,7 +52,7 @@ const getModel = (modelType) => {
   }
 };
 
-export async function summarizeRepository(repositoryData, modelType = 'deepseek') {
+export async function summarizeRepository(repositoryData, modelType = 'openrouter') {
   try {
     const model = getModel(modelType);
     const chain = prompt.pipe(model);
@@ -52,8 +65,19 @@ export async function summarizeRepository(repositoryData, modelType = 'deepseek'
     
     return result.content;
   } catch (error) {
-    console.error(`Error in summarizeRepository:`, error);
-    // フォールバックとしてMistralを使用
-    return summarizeRepository(repositoryData, 'mistral');
+    console.error(`Error in summarizeRepository with ${modelType}:`, error);
+    
+    // フォールバック順序: OpenRouter -> DeepSeek -> Mistral
+    if (modelType === 'openrouter') {
+      console.log('Falling back to DeepSeek...');
+      return summarizeRepository(repositoryData, 'deepseek');
+    } else if (modelType === 'deepseek') {
+      console.log('Falling back to Mistral...');
+      return summarizeRepository(repositoryData, 'mistral');
+    } else {
+      // Mistralでも失敗した場合は基本的なエラーメッセージを返す
+      console.error('All models failed, returning basic summary');
+      return `I just starred ${repositoryData.repo || "Unknown Repository"} - Unable to generate summary`;
+    }
   }
 }

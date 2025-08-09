@@ -14,11 +14,11 @@
   ],
   "author": "",
   "license": "MIT",
-  "devDependencies": {},
   "dependencies": {
     "@langchain/core": "^0.3.40",
     "@langchain/deepseek": "^0.0.1",
     "@langchain/mistralai": "^0.2.0",
+    "@langchain/openai": "^0.6.7",
     "@octokit/graphql": "^7.0.2",
     "dotenv": "^16.4.7",
     "twitter-api-v2": "^1.15.2"

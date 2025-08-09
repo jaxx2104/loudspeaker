@@ -6,6 +6,7 @@ const requiredEnvVars = [
   'X_API_SECRET',
   'X_ACCESS_TOKEN',
   'X_ACCESS_SECRET',
+  'OPENROUTER_API_KEY',
   'MISTRAL_API_KEY',
   'DEEPSEEK_API_KEY',
   'SYSTEM_PROMPT',
@@ -33,6 +34,9 @@ export const config = {
   },
   mistral: {
     apiKey: process.env.MISTRAL_API_KEY,
+  },
+  openrouter: {
+    apiKey: process.env.OPENROUTER_API_KEY,
   },
   deepseek: {
     apiKey: process.env.DEEPSEEK_API_KEY,
