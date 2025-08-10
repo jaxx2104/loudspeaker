@@ -1,7 +1,7 @@
 import { TwitterApi } from 'twitter-api-v2';
-import { config } from '../config/env.js';
+import { config } from '../config/env.ts';
 
-// X クライアントの初期化
+// X client initialization
 const twitterClient = new TwitterApi({
   appKey: config.twitter.apiKey,
   appSecret: config.twitter.apiSecret,
@@ -9,6 +9,6 @@ const twitterClient = new TwitterApi({
   accessSecret: config.twitter.accessSecret,
 });
 
-export async function postToX(message) {
+export async function postToX(message: string): Promise<void> {
   await twitterClient.v2.tweet(message);
 }

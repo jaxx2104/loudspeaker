@@ -1,14 +1,15 @@
 import { graphql } from '@octokit/graphql';
-import { config } from '../config/env.js';
+import { config } from '../config/env.ts';
+import type { GitHubResponse, StarData } from '../types.ts';
 
-// GraphQL クライアントの初期化
+// GraphQL client with authentication
 const graphqlWithAuth = graphql.defaults({
   headers: {
     authorization: `token ${config.github.token}`,
   },
 });
 
-export async function getRecentStars() {
+export async function getRecentStars(): Promise<StarData[]> {
   const query = `
     query($username: String!, $cursor: String) {
       user(login: $username) {
@@ -42,22 +43,22 @@ export async function getRecentStars() {
     }
   `;
 
-  const stars = [];
+  const stars: StarData[] = [];
   let hasNextPage = true;
-  let cursor = null;
-  
-  // 15分前の時刻を計算
+  let cursor: string | null = null;
+
+  // Calculate timestamp for 15 minutes ago
   const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 
   while (hasNextPage) {
     const response = await graphqlWithAuth(query, {
       username: config.github.username,
       cursor,
-    });
+    }) as GitHubResponse;
 
     const edges = response.user.starredRepositories.edges;
-    
-    // 15分以内のStarのみを追加
+
+    // Add only stars from within the last 15 minutes
     for (const edge of edges) {
       const starredAt = new Date(edge.starredAt);
       if (starredAt > fifteenMinutesAgo) {

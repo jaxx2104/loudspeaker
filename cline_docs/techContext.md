@@ -1,6 +1,7 @@
 # Technical Context
 
 ## Technologies Used
+
 - GitHub Actions
 - Node.js
 - GitHub API v4 (GraphQL)
@@ -10,6 +11,7 @@
 - dotenv
 
 ## Development Setup
+
 1. GitHub リポジトリの設定
    - Actions の有効化
    - 必要な Secrets の設定
@@ -35,6 +37,7 @@
    ```
 
 ## Project Dependencies
+
 - @octokit/graphql: GitHub GraphQL API クライアント
 - twitter-api-v2: X API クライアント
 - @langchain/core: LangChain フレームワーク
@@ -42,6 +45,7 @@
 - dotenv: 環境変数管理
 
 ## Technical Constraints
+
 - GitHub API のレート制限
 - X API の投稿制限
 - GitHub Actions の実行時間制限
@@ -49,6 +53,7 @@
 - LangChain の非同期処理の制約
 
 ## Performance Considerations
+
 - GraphQL によるデータ取得の最適化
 - 15分間隔での実行による API 制限の回避
 - AI 要約処理の効率化（temperature: 0.3の設定）

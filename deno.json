@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
+  },
+  "imports": {
+    "@octokit/graphql": "https://esm.sh/@octokit/graphql@8.1.1",
+    "twitter-api-v2": "https://esm.sh/twitter-api-v2@1.15.2",
+    "@mastra/core": "https://esm.sh/@mastra/core@0.13.1",
+    "@mastra/core/agent": "https://esm.sh/@mastra/core@0.13.1/agent",
+    "@openrouter/ai-sdk-provider": "https://esm.sh/@openrouter/ai-sdk-provider@0.7.5",
+    "@ai-sdk/deepseek": "https://esm.sh/@ai-sdk/deepseek@0.2.15",
+    "@ai-sdk/mistral": "https://esm.sh/@ai-sdk/mistral@1.2.8",
+    "ai": "https://esm.sh/ai@4.3.19"
+  },
+  "tasks": {
+    "start": "deno run --allow-net --allow-env --allow-read src/index.ts",
+    "test": "deno run --allow-net --allow-env --allow-read src/services/summarizer.test.ts",
+    "test-with-api": "deno run --allow-net --allow-env --allow-read test-summarizer.ts",
+    "test-summarizer": "deno run --allow-net --allow-env --allow-read src/services/summarizer.test.ts",
+    "dev": "deno run --watch --allow-net --allow-env --allow-read src/index.ts",
+    "check": "deno check src/**/*.ts",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  }
+}

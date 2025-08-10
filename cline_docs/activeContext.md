@@ -1,11 +1,13 @@
 # Active Context
 
 ## Current Focus
+
 - コードベースのモジュール化と保守性の向上
 - テスト環境の整備
 - エラーハンドリングの強化
 
 ## Recent Changes
+
 - ソースコードを単一責任の原則に基づいて分割:
   - config/env.js: 環境変数の管理
   - services/github.js: GitHub API操作
@@ -16,11 +18,13 @@
 - ドキュメントの包括的な更新
 
 ## Architecture Changes
+
 - 単一責任の原則に基づくファイル分割
 - サービス層の導入によるモジュール性の向上
 - 設定の中央管理による保守性の改善
 
 ## Next Steps
+
 1. 統合テストの実装
    - 各サービスのユニットテスト
    - エンドツーエンドテスト
