@@ -4,7 +4,10 @@
   "description": "A GitHub Action that automatically shares new repository stars on X (Twitter)",
   "main": "src/index.js",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node test-summarizer.js"
+  },
   "keywords": [
     "github-actions",
     "github",
@@ -15,11 +18,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@langchain/core": "^0.3.40",
-    "@langchain/deepseek": "^0.0.1",
-    "@langchain/mistralai": "^0.2.0",
-    "@langchain/openai": "^0.6.7",
+    "@ai-sdk/deepseek": "^0.2.15",
+    "@ai-sdk/mistral": "^1.2.8",
+    "@mastra/core": "^0.13.1",
     "@octokit/graphql": "^7.0.2",
+    "@openrouter/ai-sdk-provider": "^0.7.5",
+    "ai": "^4.3.19",
     "dotenv": "^16.4.7",
     "twitter-api-v2": "^1.15.2"
   }
