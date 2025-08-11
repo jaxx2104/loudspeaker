@@ -1,4 +1,4 @@
-import type { StarData } from '../types.ts';
+import type { StarData } from '../types/index.ts';
 import { summarizeRepository } from './summarizer.ts';
 
 // Mock environment variables for testing

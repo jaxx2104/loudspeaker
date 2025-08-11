@@ -42,29 +42,57 @@ All development requires these environment variables in `.env` file:
 
 This is a GitHub Action that automatically shares starred repositories on X (Twitter) every 15 minutes using AI-generated summaries.
 
-**Service Layer Pattern (TypeScript with Deno):**
+**Modular Service Layer Pattern (TypeScript with Deno):**
 
-- `src/config/env.ts`: Centralized environment variable validation and configuration with strong typing
+**AI Layer:**
+- `src/ai/agents.ts`: Mastra agent configurations for different AI providers
+- `src/ai/providers/`: Individual AI provider configurations (OpenRouter, DeepSeek, Mistral)
+- `src/ai/types.ts`: AI-specific type definitions
+
+**Configuration Layer:**
+- `src/config/env.ts`: Environment variable configuration with strong typing
+- `src/config/validation.ts`: Environment variable validation logic
+
+**Core Layer:**
+- `src/core/processor.ts`: Main processing logic orchestration
+
+**Service Layer:**
 - `src/services/github.ts`: GitHub GraphQL API interactions for fetching recent stars
-- `src/services/summarizer.ts`: AI-powered repository summarization using Mastra with OpenRouter/DeepSeek/Mistral models
+- `src/services/summarizer.ts`: AI-powered repository summarization using Mastra framework
 - `src/services/twitter.ts`: X API v2 posting functionality
-- `src/index.ts`: Main orchestration logic
-- `src/types.ts`: TypeScript type definitions for all data structures
+
+**Type Layer:**
+- `src/types/config.ts`: Configuration type definitions
+- `src/types/github.ts`: GitHub API type definitions
+- `src/types/index.ts`: Centralized type exports
+
+**Entry Point:**
+- `src/index.ts`: Main application entry point
 
 **Key Flow:**
 
-1. GitHub service fetches stars from last 15 minutes using GraphQL
-2. For each star, summarizer creates 50-character summary using configurable system prompt
-3. Twitter service posts formatted message with summary and URL
-4. Process repeats every 15 minutes via GitHub Actions cron schedule
+1. `core/processor.ts` orchestrates the main processing flow
+2. `services/github.ts` fetches stars from last 15 minutes using GraphQL
+3. `services/summarizer.ts` creates AI-powered summaries with configurable system prompt
+4. `services/twitter.ts` posts formatted messages to X
+5. Process repeats every 15 minutes via GitHub Actions cron schedule
 
 **AI Integration:**
 
-- Primary model: OpenRouter GPT-5-nano (with DeepSeek -> Mistral fallback chain)
+- Primary model: OpenRouter GPT-5-nano (with DeepSeek → Mistral fallback chain)
+- AI providers cleanly separated in `ai/providers/` directory
+- Mastra agents managed centrally in `ai/agents.ts`
 - Uses Mastra framework with AI SDK for unified LLM operations
 - Temperature set to 0.3 for consistent summaries
 - Agent-based architecture with configurable system prompt
-- Automatic fallback order: OpenRouter -> DeepSeek -> Mistral
+- Automatic fallback order: OpenRouter → DeepSeek → Mistral
+
+**Design Principles:**
+
+- **Single Responsibility**: Each file/module handles one specific concern
+- **Modular Architecture**: Clear separation between AI, config, services, and types
+- **High Cohesion, Low Coupling**: Related functionality grouped together, minimal dependencies
+- **Type Safety**: Comprehensive TypeScript coverage across all modules
 
 **API Rate Limiting:**
 
