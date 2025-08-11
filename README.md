@@ -58,14 +58,27 @@ deno task lint
 
 ```
 src/
+├── ai/
+│   ├── agents.ts        # Mastra agents configuration for different AI providers
+│   ├── providers/       # AI provider configurations
+│   │   ├── openrouter.ts
+│   │   ├── deepseek.ts
+│   │   └── mistral.ts
+│   └── types.ts         # AI-related type definitions
 ├── config/
-│   └── env.ts           # Environment variables configuration with strong typing
+│   ├── env.ts           # Environment variables configuration with strong typing
+│   └── validation.ts    # Environment variable validation logic
+├── core/
+│   └── processor.ts     # Core processing logic for stars
 ├── services/
 │   ├── github.ts        # GitHub GraphQL API interactions
 │   ├── summarizer.ts    # AI-powered summarization using Mastra framework
 │   └── twitter.ts       # X API v2 posting functionality
-├── types.ts             # TypeScript type definitions
-└── index.ts             # Main orchestration logic
+├── types/
+│   ├── config.ts        # Configuration type definitions
+│   ├── github.ts        # GitHub API type definitions
+│   └── index.ts         # Type exports
+└── index.ts             # Main application entry point
 ```
 
 ## Getting X API Credentials
@@ -80,42 +93,57 @@ src/
 ## Getting AI API Keys
 
 ### OpenRouter (Primary)
+
 1. Visit [OpenRouter Platform](https://openrouter.ai/)
 2. Sign up or log in
 3. Generate an API key from your dashboard
 
 ### DeepSeek (Fallback)
+
 1. Visit [DeepSeek Platform](https://platform.deepseek.com/)
 2. Sign up or log in
 3. Generate an API key from your dashboard
 
 ### Mistral AI (Fallback)
+
 1. Visit [Mistral AI Platform](https://console.mistral.ai/)
 2. Sign up or log in
 3. Generate an API key from your dashboard
 
 ## Architecture
 
-This project uses a **Service Layer Pattern** with TypeScript and Deno:
+This project uses a **Service Layer Pattern** with TypeScript and Deno, following modular design principles:
 
 **Key Flow:**
-1. GitHub service fetches stars from last 15 minutes using GraphQL
-2. For each star, summarizer creates 50-character summary using configurable system prompt
-3. Twitter service posts formatted message with summary and URL
-4. Process repeats every 15 minutes via GitHub Actions cron schedule
+
+1. `core/processor.ts` orchestrates the main processing logic
+2. `services/github.ts` fetches stars from last 15 minutes using GraphQL
+3. `services/summarizer.ts` creates AI-powered summaries using the configured system prompt
+4. `services/twitter.ts` posts formatted messages to X
+5. Process repeats every 15 minutes via GitHub Actions cron schedule
 
 **AI Integration:**
-- Primary model: OpenRouter GPT-5-nano
-- Fallback chain: OpenRouter → DeepSeek → Mistral
-- Uses Mastra framework with AI SDK for unified LLM operations
-- Temperature set to 0.3 for consistent summaries
-- Agent-based architecture with configurable system prompt
+
+- Primary model: OpenRouter GPT-5-nano with fallback chain (OpenRouter → DeepSeek → Mistral)
+- AI providers configured in `ai/providers/` directory for clean separation
+- Mastra agents managed in `ai/agents.ts` with unified configuration
+- Uses Mastra framework with AI SDK for consistent LLM operations
+- Temperature set to 0.3 for reliable summaries
+
+**Design Principles:**
+
+- **Single Responsibility**: Each module handles one specific concern
+- **Modular Structure**: AI, configuration, services, and types are clearly separated
+- **Type Safety**: Comprehensive TypeScript definitions across all modules
+- **Configuration Management**: Centralized environment validation and configuration
 
 ## Customization
 
-- To change the post message format, edit the message template in `src/index.ts`
+- To change the post message format, edit the message template in `src/core/processor.ts`
 - To modify the summary format, update the `SYSTEM_PROMPT` environment variable
 - To adjust environment variables, modify `src/config/env.ts`
+- To add new AI providers, create new provider files in `src/ai/providers/`
+- To modify AI agent configurations, edit `src/ai/agents.ts`
 
 ## License
 
@@ -124,7 +152,7 @@ MIT
 ## Notes
 
 - Be mindful of X API rate limits
-- Be aware of GitHub API rate limits  
+- Be aware of GitHub API rate limits
 - Consider AI API usage and costs across all providers
 - 15-minute intervals prevent API rate limiting
 - Built-in retry logic with model fallback ensures reliability
