@@ -1,5 +1,30 @@
 {
   "version": "4",
+  "specifiers": {
+    "jsr:@std/assert@1": "1.0.13",
+    "jsr:@std/assert@^1.0.13": "1.0.13",
+    "jsr:@std/internal@^1.0.6": "1.0.8",
+    "jsr:@std/internal@^1.0.8": "1.0.8",
+    "jsr:@std/testing@1": "1.0.14"
+  },
+  "jsr": {
+    "@std/assert@1.0.13": {
+      "integrity": "ae0d31e41919b12c656c742b22522c32fb26ed0cba32975cb0de2a273cb68b29",
+      "dependencies": [
+        "jsr:@std/internal@^1.0.6"
+      ]
+    },
+    "@std/internal@1.0.8": {
+      "integrity": "fc66e846d8d38a47cffd274d80d2ca3f0de71040f855783724bb6b87f60891f5"
+    },
+    "@std/testing@1.0.14": {
+      "integrity": "144b3737105b9071cb50c957681f58a1b8ec0f3e5b19ad830f401c5fa931e8f0",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.13",
+        "jsr:@std/internal@^1.0.8"
+      ]
+    }
+  },
   "redirects": {
     "https://esm.sh/@ai-sdk/provider-utils@^2.2.8?target=denonext": "https://esm.sh/@ai-sdk/provider-utils@2.2.8?target=denonext",
     "https://esm.sh/@octokit/endpoint@^10.1.4?target=denonext": "https://esm.sh/@octokit/endpoint@10.1.4?target=denonext",
@@ -151,5 +176,11 @@
     "https://esm.sh/zod-to-json-schema@3.24.6?target=denonext": "39d628a1c788caaf62002755688e9a4e777272b75d8b85a4c5768dc4ab3e7e32",
     "https://esm.sh/zod@3.25.76/denonext/zod.mjs": "9f643d0cc560840b7fa3b6e6fc3a5a41595f12ff8863cac0ccbae3ec98989284",
     "https://esm.sh/zod@3.25.76?target=denonext": "7d2e5b7450d6f99b9b3b228958bd1291d5a1f8378f82b8cdd2ce83b2f14961c2"
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@std/assert@1",
+      "jsr:@std/testing@1"
+    ]
   }
 }

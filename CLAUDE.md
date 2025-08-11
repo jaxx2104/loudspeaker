@@ -11,8 +11,17 @@ deno task start
 # Run with file watching (development mode)
 deno task dev
 
-# Test the Mastra summarizer with all providers
+# Run all Deno standard tests
 deno task test
+
+# Run specific test suites
+deno task test-unit          # Type and core tests
+deno task test-config        # Configuration tests
+deno task test-services      # Service layer tests
+deno task test-integration   # Integration tests
+
+# Test the Mastra summarizer with all providers (legacy)
+deno task test-summarizer
 
 # Type check all TypeScript files
 deno task check
