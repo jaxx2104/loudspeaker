@@ -17,16 +17,6 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Cache Deno dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/deno
-            ~/.deno
-          key: ${{ runner.os }}-deno-${{ hashFiles('**/deno.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-deno-
-
       - name: Run application
         env:
           USER_GITHUB_TOKEN: ${{ secrets.USER_GITHUB_TOKEN }}
@@ -40,4 +30,4 @@ jobs:
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
           REPOSITORY: ${{ github.repository }}
           SYSTEM_PROMPT: ${{ secrets.SYSTEM_PROMPT }}
-        run: deno task start
+        run: deno run --allow-net --allow-env --allow-read --lock none src/index.ts
