@@ -151,5 +151,11 @@
     "https://esm.sh/zod-to-json-schema@3.24.6?target=denonext": "39d628a1c788caaf62002755688e9a4e777272b75d8b85a4c5768dc4ab3e7e32",
     "https://esm.sh/zod@3.25.76/denonext/zod.mjs": "9f643d0cc560840b7fa3b6e6fc3a5a41595f12ff8863cac0ccbae3ec98989284",
     "https://esm.sh/zod@3.25.76?target=denonext": "7d2e5b7450d6f99b9b3b228958bd1291d5a1f8378f82b8cdd2ce83b2f14961c2"
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@std/assert@1",
+      "jsr:@std/testing@1"
+    ]
   }
 }

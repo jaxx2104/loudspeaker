@@ -1,6 +1,6 @@
 import { graphql } from '@octokit/graphql';
 import { config } from '../config/env.ts';
-import type { GitHubResponse, StarData } from '../types.ts';
+import type { GitHubResponse, StarData } from '../types/index.ts';
 
 // GraphQL client with authentication
 const graphqlWithAuth = graphql.defaults({

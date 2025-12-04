@@ -1,55 +1,5 @@
-import { Agent } from '@mastra/core/agent';
-import { Mastra } from '@mastra/core';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { createDeepSeek } from '@ai-sdk/deepseek';
-import { createMistral } from '@ai-sdk/mistral';
-import { config } from '../config/env.ts';
-import type { GenerateOptions, Message, ModelType, StarData } from '../types.ts';
-
-const openrouter = createOpenRouter({
-  apiKey: config.openrouter.apiKey,
-});
-
-const deepseek = createDeepSeek({
-  apiKey: config.deepseek.apiKey,
-});
-
-const mistral = createMistral({
-  apiKey: config.mistral.apiKey,
-});
-
-// OpenRouter agent (primary)
-const openrouterAgent = new Agent({
-  name: 'openrouterAgent',
-  instructions: config.systemPrompt,
-  model: openrouter('openai/gpt-5-nano'),
-});
-
-// DeepSeek agent (fallback 1)
-const deepseekAgent = new Agent({
-  name: 'deepseekAgent',
-  instructions: config.systemPrompt,
-  model: deepseek('deepseek-chat'),
-});
-
-// Mistral agent (fallback 2)
-const mistralAgent = new Agent({
-  name: 'mistralAgent',
-  instructions: config.systemPrompt,
-  model: mistral('mistral-tiny'),
-});
-
-// Mastra instance configuration
-const mastra = new Mastra({
-  agents: {
-    openrouterAgent,
-    deepseekAgent,
-    mistralAgent,
-  },
-  telemetry: {
-    enabled: false,
-  },
-});
+import { mastra } from '../ai/agents.ts';
+import type { GenerateOptions, Message, ModelType, StarData } from '../types/index.ts';
 
 export async function summarizeRepository(
   repositoryData: StarData,
