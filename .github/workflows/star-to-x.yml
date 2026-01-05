@@ -5,9 +5,16 @@ on:
     - cron: '*/15 * * * *' # 15分おきに実行
   workflow_dispatch: # 手動実行用
 
+# Prevent concurrent runs to avoid duplicate tweets
+concurrency:
+  group: star-to-x
+  cancel-in-progress: false
+
 jobs:
   share:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -30,4 +37,13 @@ jobs:
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
           REPOSITORY: ${{ github.repository }}
           SYSTEM_PROMPT: ${{ secrets.SYSTEM_PROMPT }}
-        run: deno run --allow-net --allow-env --allow-read --lock none src/index.ts
+          PROCESSED_STARS_CACHE: .processed-stars.json
+        run: deno run --allow-net --allow-env --allow-read --allow-write --lock none src/index.ts
+
+      - name: Commit processed stars
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .processed-stars.json
+          git diff --staged --quiet || git commit -m "chore: update processed stars [skip ci]"
+          git push
