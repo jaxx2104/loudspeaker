@@ -23,9 +23,8 @@ deno task fmt
 # Lint code
 deno task lint
 
-# Manual workflow trigger (GitHub Actions)  
+# Manual workflow trigger (GitHub Actions)
 # Go to Actions tab → Star to X Share → Run workflow
-# Note: GitHub Actions now uses Deno instead of Node.js
 ```
 
 ## Required Environment Variables
@@ -38,64 +37,48 @@ All development requires these environment variables in `.env` file:
 - `OPENROUTER_API_KEY`, `DEEPSEEK_API_KEY`, `MISTRAL_API_KEY`: AI service API keys
 - `SYSTEM_PROMPT`: Configurable system prompt for AI summarization
 
-## Architecture Overview
+### Optional Environment Variables
 
-This is a GitHub Action that automatically shares starred repositories on X (Twitter) every 15 minutes using AI-generated summaries.
+- `PROCESSED_STARS_CACHE`: Cache file path for processed stars (default: `.processed-stars.json`)
 
-**Modular Service Layer Pattern (TypeScript with Deno):**
+## Project Structure
 
-**AI Layer:**
-- `src/ai/agents.ts`: Mastra agent configurations for different AI providers
-- `src/ai/providers/`: Individual AI provider configurations (OpenRouter, DeepSeek, Mistral)
-- `src/ai/types.ts`: AI-specific type definitions
+```
+src/
+├── ai/              # AI provider configurations and Mastra agents
+├── config/          # Environment variable configuration and validation
+├── core/            # Main processing logic orchestration
+├── services/        # External API integrations (GitHub, X, AI summarizer)
+├── tests/           # Deno standard tests
+├── types/           # TypeScript type definitions
+└── index.ts         # Application entry point
 
-**Configuration Layer:**
-- `src/config/env.ts`: Environment variable configuration with strong typing
-- `src/config/validation.ts`: Environment variable validation logic
+.github/workflows/
+├── star-to-x.yml    # Main workflow (runs every 15 minutes)
+└── keepalive.yml    # Prevents workflow suspension
+```
 
-**Core Layer:**
-- `src/core/processor.ts`: Main processing logic orchestration
+See `README.md` for detailed architecture documentation.
 
-**Service Layer:**
-- `src/services/github.ts`: GitHub GraphQL API interactions for fetching recent stars
-- `src/services/summarizer.ts`: AI-powered repository summarization using Mastra framework
-- `src/services/twitter.ts`: X API v2 posting functionality
+## Testing
 
-**Type Layer:**
-- `src/types/config.ts`: Configuration type definitions
-- `src/types/github.ts`: GitHub API type definitions
-- `src/types/index.ts`: Centralized type exports
+- **Always run tests before committing**: `deno task test`
+- Tests are located in `src/tests/`
+- Uses Deno standard testing library (`@std/assert`, `@std/testing/bdd`)
+- See `src/tests/CLAUDE.md` for testing patterns
 
-**Entry Point:**
-- `src/index.ts`: Main application entry point
+## Code Style
 
-**Key Flow:**
+- Follow Deno formatter settings defined in `deno.json`
+- Run `deno task fmt` to format code
+- Run `deno task lint` to check for issues
+- Use single quotes, 2-space indentation, semicolons
 
-1. `core/processor.ts` orchestrates the main processing flow
-2. `services/github.ts` fetches stars from last 15 minutes using GraphQL
-3. `services/summarizer.ts` creates AI-powered summaries with configurable system prompt
-4. `services/twitter.ts` posts formatted messages to X
-5. Process repeats every 15 minutes via GitHub Actions cron schedule
+## Directory-Specific Guidance
 
-**AI Integration:**
+Each major directory contains its own `CLAUDE.md` with detailed guidance:
 
-- Primary model: OpenRouter GPT-5-nano (with DeepSeek → Mistral fallback chain)
-- AI providers cleanly separated in `ai/providers/` directory
-- Mastra agents managed centrally in `ai/agents.ts`
-- Uses Mastra framework with AI SDK for unified LLM operations
-- Temperature set to 0.3 for consistent summaries
-- Agent-based architecture with configurable system prompt
-- Automatic fallback order: OpenRouter → DeepSeek → Mistral
-
-**Design Principles:**
-
-- **Single Responsibility**: Each file/module handles one specific concern
-- **Modular Architecture**: Clear separation between AI, config, services, and types
-- **High Cohesion, Low Coupling**: Related functionality grouped together, minimal dependencies
-- **Type Safety**: Comprehensive TypeScript coverage across all modules
-
-**API Rate Limiting:**
-
-- 15-minute intervals prevent GitHub/X API limits
-- GraphQL pagination handles large star collections
-- Built-in retry logic with model fallback
+- `src/ai/CLAUDE.md` - AI provider and agent configuration
+- `src/services/CLAUDE.md` - Service layer implementation
+- `src/config/CLAUDE.md` - Environment configuration patterns
+- `src/tests/CLAUDE.md` - Testing patterns and conventions
