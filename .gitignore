@@ -6,6 +6,7 @@ node_modules/
 
 # ランタイムファイル
 .last-check
+.processed-stars.json
 
 # ログ
 *.log

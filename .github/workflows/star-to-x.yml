@@ -5,6 +5,11 @@ on:
     - cron: '*/15 * * * *' # 15分おきに実行
   workflow_dispatch: # 手動実行用
 
+# Prevent concurrent runs to avoid duplicate tweets
+concurrency:
+  group: star-to-x
+  cancel-in-progress: false
+
 jobs:
   share:
     runs-on: ubuntu-latest
@@ -16,6 +21,14 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x
+
+      - name: Restore processed stars cache
+        uses: actions/cache@v4
+        with:
+          path: .processed-stars.json
+          key: processed-stars-${{ github.run_id }}
+          restore-keys: |
+            processed-stars-
 
       - name: Run application
         env:
@@ -30,4 +43,5 @@ jobs:
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
           REPOSITORY: ${{ github.repository }}
           SYSTEM_PROMPT: ${{ secrets.SYSTEM_PROMPT }}
-        run: deno run --allow-net --allow-env --allow-read --lock none src/index.ts
+          PROCESSED_STARS_CACHE: .processed-stars.json
+        run: deno run --allow-net --allow-env --allow-read --allow-write --lock none src/index.ts
