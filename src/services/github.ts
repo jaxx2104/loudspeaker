@@ -9,8 +9,10 @@ const graphqlWithAuth = graphql.defaults({
   },
 });
 
-// Time window configuration (20 minutes to account for GitHub Actions scheduling delays)
-const TIME_WINDOW_MINUTES = 20;
+// Time window configuration
+// GitHub Actions cron can be delayed significantly (30-70+ minutes for a */15 schedule).
+// Use a wider window to avoid missing stars, relying on the processed-stars cache to prevent duplicates.
+const TIME_WINDOW_MINUTES = 120;
 
 export async function getRecentStars(): Promise<StarData[]> {
   const query = `

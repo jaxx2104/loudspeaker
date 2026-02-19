@@ -23,7 +23,7 @@ export async function postToX(message: string): Promise<void> {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       console.log(`[Twitter] Attempting to post tweet (attempt ${attempt}/${MAX_RETRIES})`);
-      await twitterClient.v2.tweet(message);
+      await twitterClient.v2.tweet({ text: message });
       console.log('[Twitter] Tweet posted successfully');
       return;
     } catch (error) {

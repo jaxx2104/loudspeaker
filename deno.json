@@ -20,9 +20,9 @@
     "@std/testing": "jsr:@std/testing@^1.0.0"
   },
   "tasks": {
-    "start": "deno run --allow-net --allow-env --allow-read src/index.ts",
+    "start": "deno run --allow-net --allow-env --allow-read --allow-write src/index.ts",
     "test": "deno test --allow-net --allow-env --allow-read src/tests/",
-    "dev": "deno run --watch --allow-net --allow-env --allow-read src/index.ts",
+    "dev": "deno run --watch --allow-net --allow-env --allow-read --allow-write src/index.ts",
     "check": "deno check src/**/*.ts",
     "fmt": "deno fmt",
     "lint": "deno lint"
