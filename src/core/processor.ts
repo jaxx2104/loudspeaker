@@ -6,6 +6,11 @@ import {
   markStarAsProcessed,
 } from '../services/processed-stars.ts';
 import type { StarData } from '../types/index.ts';
+import {
+  getWeightedLength,
+  MAX_SUMMARY_WEIGHT,
+  truncateToWeightedLength,
+} from './tweet-utils.ts';
 
 export interface ProcessingResult {
   total: number;
@@ -22,7 +27,15 @@ export async function processStar(star: StarData): Promise<void> {
   const summary = await summarizeRepository(star);
   console.log(`[Processor] Summary generated (${summary.length} chars)`);
 
-  const message = `${summary}\n${star.url}`;
+  // Truncate summary to fit within X's 280 weighted character limit
+  const truncatedSummary = truncateToWeightedLength(summary, MAX_SUMMARY_WEIGHT);
+  if (truncatedSummary !== summary) {
+    console.log(
+      `[Processor] Summary truncated from ${getWeightedLength(summary)} to ${getWeightedLength(truncatedSummary)} weighted chars`,
+    );
+  }
+
+  const message = `${truncatedSummary}\n${star.url}`;
   console.log(`[Processor] Posting to X...`);
   await postToX(message);
 
