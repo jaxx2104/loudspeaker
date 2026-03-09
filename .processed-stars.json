@@ -1,24 +1,16 @@
 {
   "processedStars": [
     {
-      "url": "https://github.com/googleworkspace/cli",
-      "processedAt": "2026-03-05T05:17:37.728Z"
+      "url": "https://github.com/rubocop/rubocop-performance",
+      "processedAt": "2026-03-09T14:05:46.290Z"
     },
     {
-      "url": "https://github.com/junhoyeo/tokscale",
-      "processedAt": "2026-03-05T23:37:10.630Z"
+      "url": "https://github.com/aneisch/home-assistant-config",
+      "processedAt": "2026-03-09T14:06:11.099Z"
     },
     {
-      "url": "https://github.com/HKUDS/nanobot",
-      "processedAt": "2026-03-05T23:37:27.175Z"
-    },
-    {
-      "url": "https://github.com/hesamsheikh/awesome-openclaw-usecases",
-      "processedAt": "2026-03-05T23:37:45.954Z"
-    },
-    {
-      "url": "https://github.com/VoltAgent/awesome-openclaw-skills",
-      "processedAt": "2026-03-05T23:38:02.186Z"
+      "url": "https://github.com/GreatScott/enject",
+      "processedAt": "2026-03-09T14:06:22.859Z"
     }
   ]
 }
