@@ -1,20 +1,12 @@
 {
   "processedStars": [
     {
-      "url": "https://github.com/rubocop/rubocop-performance",
-      "processedAt": "2026-03-09T14:05:46.290Z"
-    },
-    {
-      "url": "https://github.com/aneisch/home-assistant-config",
-      "processedAt": "2026-03-09T14:06:11.099Z"
-    },
-    {
-      "url": "https://github.com/GreatScott/enject",
-      "processedAt": "2026-03-09T14:06:22.859Z"
-    },
-    {
       "url": "https://github.com/manaflow-ai/cmux",
       "processedAt": "2026-03-10T13:37:34.693Z"
+    },
+    {
+      "url": "https://github.com/hexgrad/kokoro",
+      "processedAt": "2026-03-10T15:34:39.945Z"
     }
   ]
 }
