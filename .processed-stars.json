@@ -1,16 +1,12 @@
 {
   "processedStars": [
     {
-      "url": "https://github.com/coollabsio/coolify",
-      "processedAt": "2026-04-15T14:17:20.932Z"
-    },
-    {
-      "url": "https://github.com/firecrawl/pdf-inspector",
-      "processedAt": "2026-04-15T14:17:43.070Z"
-    },
-    {
       "url": "https://github.com/him0/ccprofile",
       "processedAt": "2026-04-16T12:49:22.707Z"
+    },
+    {
+      "url": "https://github.com/cnighswonger/claude-code-cache-fix",
+      "processedAt": "2026-04-16T14:52:55.643Z"
     }
   ]
 }
