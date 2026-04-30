@@ -1,16 +1,20 @@
 {
   "processedStars": [
     {
-      "url": "https://github.com/hassio-addons/app-grocy",
-      "processedAt": "2026-04-28T15:37:03.206Z"
+      "url": "https://github.com/Nonary/vibeshine",
+      "processedAt": "2026-04-30T16:46:45.864Z"
     },
     {
-      "url": "https://github.com/mattpocock/skills",
-      "processedAt": "2026-04-28T15:37:16.910Z"
+      "url": "https://github.com/Auriti-Labs/geo-optimizer-skill",
+      "processedAt": "2026-04-30T16:47:04.828Z"
     },
     {
-      "url": "https://github.com/sharkdp/vivid",
-      "processedAt": "2026-04-28T15:37:30.492Z"
+      "url": "https://github.com/modelcontextprotocol/experimental-ext-skills",
+      "processedAt": "2026-04-30T16:47:24.179Z"
+    },
+    {
+      "url": "https://github.com/kentcdodds/kody",
+      "processedAt": "2026-04-30T16:48:14.679Z"
     }
   ]
 }
