@@ -3,7 +3,6 @@
 export const T_CO_URL_WEIGHT = 23;
 export const MAX_TWEET_WEIGHT = 280;
 export const NEWLINE_WEIGHT = 1;
-export const MAX_SUMMARY_WEIGHT = MAX_TWEET_WEIGHT - T_CO_URL_WEIGHT - NEWLINE_WEIGHT;
 
 /**
  * Check if a Unicode code point is a double-weight character in X's counting.
