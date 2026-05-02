@@ -44,6 +44,7 @@ export function validateEnv(): void {
 ## Environment Variable Categories
 
 ### Required (no defaults)
+
 - `USER_GITHUB_TOKEN` - GitHub API access
 - `USER_GITHUB_NAME` - GitHub username
 - `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` - X API
@@ -51,4 +52,5 @@ export function validateEnv(): void {
 - `SYSTEM_PROMPT` - AI summarization prompt
 
 ### Optional (with defaults)
+
 - `PROCESSED_STARS_CACHE` - Cache file path (default: `.processed-stars.json`)

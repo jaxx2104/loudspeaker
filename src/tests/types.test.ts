@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
-import type { Config, StarData, ModelType } from '../types/index.ts';
+import type { Config, ModelType, StarData } from '../types/index.ts';
 
 describe('Type definitions', () => {
   it('should define Config interface correctly', () => {
@@ -49,7 +49,7 @@ describe('Type definitions', () => {
 
   it('should define ModelType union correctly', () => {
     const validModels: ModelType[] = ['openrouter', 'deepseek', 'mistral'];
-    
+
     for (const model of validModels) {
       assertEquals(typeof model, 'string');
       assertEquals(['openrouter', 'deepseek', 'mistral'].includes(model), true);

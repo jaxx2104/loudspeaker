@@ -12,21 +12,22 @@
 
 ## File Structure
 
-| File | Status | Responsibility |
-|---|---|---|
-| `src/core/tweet-utils.ts` | modify | Add `truncateAtSentenceBoundary`. Remove unused `MAX_SUMMARY_WEIGHT` (Task 7). |
-| `src/services/summarizer.ts` | modify | Add `trimReadme`, `processOutput`, `buildUserMessage`. Update `summarizeRepository` signature to take `bodyBudget`. |
-| `src/core/processor.ts` | modify | Add `computeBodyBudget`, `buildPostMessage` helpers. Use code-side prefix template, no truncation here. |
-| `src/ai/agents.ts` | modify | Update three model identifier strings. |
-| `src/tests/tweet-utils.test.ts` | create | Unit tests for `truncateAtSentenceBoundary`. |
-| `src/tests/services.test.ts` | modify | Add tests for `trimReadme`, `processOutput`. |
-| `src/tests/core.test.ts` | modify | Add tests for `computeBodyBudget`, `buildPostMessage`. |
+| File                            | Status | Responsibility                                                                                                      |
+| ------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
+| `src/core/tweet-utils.ts`       | modify | Add `truncateAtSentenceBoundary`. Remove unused `MAX_SUMMARY_WEIGHT` (Task 7).                                      |
+| `src/services/summarizer.ts`    | modify | Add `trimReadme`, `processOutput`, `buildUserMessage`. Update `summarizeRepository` signature to take `bodyBudget`. |
+| `src/core/processor.ts`         | modify | Add `computeBodyBudget`, `buildPostMessage` helpers. Use code-side prefix template, no truncation here.             |
+| `src/ai/agents.ts`              | modify | Update three model identifier strings.                                                                              |
+| `src/tests/tweet-utils.test.ts` | create | Unit tests for `truncateAtSentenceBoundary`.                                                                        |
+| `src/tests/services.test.ts`    | modify | Add tests for `trimReadme`, `processOutput`.                                                                        |
+| `src/tests/core.test.ts`        | modify | Add tests for `computeBodyBudget`, `buildPostMessage`.                                                              |
 
 ---
 
 ## Task 1: Add `truncateAtSentenceBoundary`
 
 **Files:**
+
 - Create: `src/tests/tweet-utils.test.ts`
 - Modify: `src/core/tweet-utils.ts`
 
@@ -37,10 +38,7 @@ Create `src/tests/tweet-utils.test.ts`:
 ```typescript
 import { assertEquals } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
-import {
-  getWeightedLength,
-  truncateAtSentenceBoundary,
-} from '../core/tweet-utils.ts';
+import { getWeightedLength, truncateAtSentenceBoundary } from '../core/tweet-utils.ts';
 
 describe('truncateAtSentenceBoundary', () => {
   it('returns text unchanged when within budget', () => {
@@ -137,6 +135,7 @@ git commit -m "feat(tweet-utils): add truncateAtSentenceBoundary helper"
 ## Task 2: Add `trimReadme` helper
 
 **Files:**
+
 - Modify: `src/services/summarizer.ts`
 - Modify: `src/tests/services.test.ts`
 
@@ -150,7 +149,7 @@ import { trimReadme } from '../services/summarizer.ts';
 
 Then add at the end of the file (a new top-level `describe` block, outside `describe('Services')`):
 
-```typescript
+````typescript
 describe('trimReadme', () => {
   it('removes badge images', () => {
     const input = 'Hello ![badge](https://img.shields.io/x.svg) world';
@@ -179,7 +178,7 @@ describe('trimReadme', () => {
     assertEquals(trimReadme(''), '');
   });
 });
-```
+````
 
 - [ ] **Step 2: Run tests to verify failure**
 
@@ -190,18 +189,18 @@ Expected: FAIL — `trimReadme` not exported.
 
 Add to the top of `src/services/summarizer.ts` (before `summarizeRepository`):
 
-```typescript
+````typescript
 /** Strip noisy markdown chrome and cap length for prompt-friendliness. */
 export function trimReadme(readme: string, maxChars = 1500): string {
   return readme
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')   // badge images
-    .replace(/<!--[\s\S]*?-->/g, '')         // HTML comments
-    .replace(/```[\s\S]*?```/g, '')          // fenced code blocks
-    .replace(/\n{3,}/g, '\n\n')              // collapse blank lines
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '') // badge images
+    .replace(/<!--[\s\S]*?-->/g, '') // HTML comments
+    .replace(/```[\s\S]*?```/g, '') // fenced code blocks
+    .replace(/\n{3,}/g, '\n\n') // collapse blank lines
     .trim()
     .slice(0, maxChars);
 }
-```
+````
 
 - [ ] **Step 4: Run tests to verify pass**
 
@@ -225,6 +224,7 @@ git commit -m "feat(summarizer): add trimReadme helper for prompt curation"
 ## Task 3: Add `processOutput` validation/retry helper
 
 **Files:**
+
 - Modify: `src/services/summarizer.ts`
 - Modify: `src/tests/services.test.ts`
 
@@ -346,6 +346,7 @@ git commit -m "feat(summarizer): add processOutput validation/retry helper"
 ## Task 4: Add `computeBodyBudget` and `buildPostMessage` to processor
 
 **Files:**
+
 - Modify: `src/core/processor.ts`
 - Modify: `src/tests/core.test.ts`
 
@@ -356,10 +357,7 @@ These are the pure helpers the refactored `processStar` will use in Task 5. Addi
 Add to `src/tests/core.test.ts` — extend the imports:
 
 ```typescript
-import {
-  buildPostMessage,
-  computeBodyBudget,
-} from '../core/processor.ts';
+import { buildPostMessage, computeBodyBudget } from '../core/processor.ts';
 import { MAX_TWEET_WEIGHT } from '../core/tweet-utils.ts';
 ```
 
@@ -401,8 +399,8 @@ describe('buildPostMessage', () => {
     // We assert against the X-counted weighted length using getWeightedLength on the
     // non-URL parts plus T_CO_URL_WEIGHT.
     const prefix = `I just starred ${repo} - `;
-    const weighted =
-      getWeightedLength(prefix) + getWeightedLength(body) + 1 /* \n */ + 23 /* t.co */;
+    const weighted = getWeightedLength(prefix) + getWeightedLength(body) + 1 /* \n */ +
+      23 /* t.co */;
     assertEquals(weighted <= MAX_TWEET_WEIGHT, true);
     assertEquals(msg.startsWith(prefix), true);
     assertEquals(msg.endsWith(url), true);
@@ -436,10 +434,10 @@ const POST_PREFIX = (repo: string) => `I just starred ${repo} - `;
 /** Compute the weighted character budget for the AI-generated body. */
 export function computeBodyBudget(repo: string): number {
   return (
-    MAX_TWEET_WEIGHT
-    - getWeightedLength(POST_PREFIX(repo))
-    - NEWLINE_WEIGHT
-    - T_CO_URL_WEIGHT
+    MAX_TWEET_WEIGHT -
+    getWeightedLength(POST_PREFIX(repo)) -
+    NEWLINE_WEIGHT -
+    T_CO_URL_WEIGHT
   );
 }
 
@@ -475,6 +473,7 @@ git commit -m "feat(processor): add computeBodyBudget and buildPostMessage helpe
 This task is atomic because the signature change of `summarizeRepository` requires `processor.ts` to update its call site in the same commit (otherwise `deno task check` fails).
 
 **Files:**
+
 - Modify: `src/services/summarizer.ts`
 - Modify: `src/core/processor.ts`
 
@@ -540,9 +539,8 @@ export async function summarizeRepository(
         { role: 'assistant', content: initialText },
         {
           role: 'user',
-          content:
-            `先ほどの出力は ${initialWeight} weighted 文字でした。`
-            + `${bodyBudget} weighted 文字以内に短縮した日本語要約のみを返してください。`,
+          content: `先ほどの出力は ${initialWeight} weighted 文字でした。` +
+            `${bodyBudget} weighted 文字以内に短縮した日本語要約のみを返してください。`,
         },
       ];
       const retried = await agent.generate(retryMessages, options);
@@ -601,6 +599,7 @@ export async function processStar(star: StarData): Promise<void> {
 ```
 
 Remove the now-unused imports from `processor.ts`:
+
 - Remove `truncateToWeightedLength` from the `./tweet-utils.ts` import.
 - Remove `MAX_SUMMARY_WEIGHT` from the `./tweet-utils.ts` import.
 
@@ -610,10 +609,7 @@ Final import block in `processor.ts` should look like:
 import { getRecentStars } from '../services/github.ts';
 import { summarizeRepository } from '../services/summarizer.ts';
 import { postToX } from '../services/twitter.ts';
-import {
-  filterUnprocessedStars,
-  markStarAsProcessed,
-} from '../services/processed-stars.ts';
+import { filterUnprocessedStars, markStarAsProcessed } from '../services/processed-stars.ts';
 import type { StarData } from '../types/index.ts';
 import {
   getWeightedLength,
@@ -650,17 +646,18 @@ git commit -m "refactor(summarizer): take bodyBudget, validate output, retry onc
 ## Task 6: Update model identifiers
 
 **Files:**
+
 - Modify: `src/ai/agents.ts`
 
 - [ ] **Step 1: Verify current model availability (read-only)**
 
 Briefly check each provider's current model catalog for the exact alias to use. The spec proposes:
 
-| Agent | New model | Verification |
-|---|---|---|
-| `openrouterAgent` | `openai/gpt-5.4-nano` | Check https://openrouter.ai/models for the exact slug |
-| `deepseekAgent` | `deepseek-v4-flash` | Check https://api-docs.deepseek.com/quick_start/pricing |
-| `mistralAgent` | `ministral-8b` | Check https://docs.mistral.ai/models/overview — may be `ministral-8b-latest` |
+| Agent             | New model             | Verification                                                                 |
+| ----------------- | --------------------- | ---------------------------------------------------------------------------- |
+| `openrouterAgent` | `openai/gpt-5.4-nano` | Check https://openrouter.ai/models for the exact slug                        |
+| `deepseekAgent`   | `deepseek-v4-flash`   | Check https://api-docs.deepseek.com/quick_start/pricing                      |
+| `mistralAgent`    | `ministral-8b`        | Check https://docs.mistral.ai/models/overview — may be `ministral-8b-latest` |
 
 If a provider's preferred form is `*-latest` instead of the family name, use that.
 
@@ -702,6 +699,7 @@ Run: `deno task start`
 Watch for at least one star to be processed. If no stars are pending, temporarily modify `TIME_WINDOW_MINUTES` in `src/services/github.ts` to a larger value like `1440` (24 hours), confirm a fetch and summary, then revert.
 
 Confirm:
+
 - AI generates a summary in Japanese.
 - Summary is grounded in `description` (no fabricated names).
 - Total tweet length ≤ 280 weighted (the X API will reject otherwise).
@@ -719,6 +717,7 @@ git commit -m "feat(ai): refresh model IDs (gpt-5.4-nano, deepseek-v4-flash, min
 ## Task 7: Remove unused `MAX_SUMMARY_WEIGHT`
 
 **Files:**
+
 - Modify: `src/core/tweet-utils.ts`
 
 - [ ] **Step 1: Verify no remaining usages**

@@ -49,6 +49,7 @@ This directory contains external API integrations and business logic services.
 ## Logging Convention
 
 Use bracketed prefix for log messages:
+
 ```typescript
 console.log('[GitHub] Fetching recent stars...');
 console.error('[Twitter] Failed to post:', error);

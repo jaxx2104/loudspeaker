@@ -36,7 +36,7 @@ describe('Integration Tests', () => {
 
   it('should process star data end-to-end (mock)', async () => {
     // This test verifies the data flow without making actual API calls
-    
+
     // 1. Verify star data structure
     assertEquals(typeof mockStarData.repo, 'string');
     assertEquals(mockStarData.url.startsWith('https://'), true);
@@ -50,7 +50,7 @@ describe('Integration Tests', () => {
     // 3. Verify message formatting
     const mockSummary = 'Sample Node.js app for testing integration workflows';
     const expectedMessage = `${mockSummary}\n${mockStarData.url}`;
-    
+
     assertEquals(expectedMessage.includes(mockSummary), true);
     assertEquals(expectedMessage.includes(mockStarData.url), true);
     assertEquals(expectedMessage.split('\n').length, 2);
@@ -77,7 +77,7 @@ describe('Integration Tests', () => {
     assertEquals(multipleStars.length, 3);
     assertEquals(multipleStars[1]?.primaryLanguage, 'Python');
     assertEquals(multipleStars[2]?.description, null);
-    
+
     // Verify all items have required fields
     for (const star of multipleStars) {
       assertEquals(typeof star.repo, 'string');
@@ -88,12 +88,12 @@ describe('Integration Tests', () => {
 
   it('should validate AI fallback chain order', async () => {
     const { config } = await import('../config/env.ts');
-    
+
     // Verify all AI providers are configured
     assertEquals(typeof config.openrouter.apiKey, 'string');
     assertEquals(typeof config.deepseek.apiKey, 'string');
     assertEquals(typeof config.mistral.apiKey, 'string');
-    
+
     // Verify the expected fallback order exists
     const expectedProviders = ['openrouter', 'deepseek', 'mistral'];
     for (const provider of expectedProviders) {

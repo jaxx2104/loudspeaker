@@ -46,16 +46,17 @@ describe('Services', () => {
     it('should format message correctly', () => {
       const summary = 'Awesome TypeScript project with best practices';
       const expectedMessage = `${summary}\n${mockStarData.url}`;
-      
+
       assertEquals(expectedMessage.includes(summary), true);
       assertEquals(expectedMessage.includes(mockStarData.url), true);
       assertEquals(expectedMessage.includes('\n'), true);
     });
 
     it('should handle long summaries', () => {
-      const longSummary = 'This is a very long summary that might exceed typical social media character limits but should still be handled gracefully by the system';
+      const longSummary =
+        'This is a very long summary that might exceed typical social media character limits but should still be handled gracefully by the system';
       const message = `${longSummary}\n${mockStarData.url}`;
-      
+
       assertEquals(message.length > mockStarData.url.length, true);
       assertEquals(message.endsWith(mockStarData.url), true);
     });

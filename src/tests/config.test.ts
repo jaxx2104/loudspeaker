@@ -19,7 +19,10 @@ describe('Config validation', () => {
   beforeEach(() => {
     // Clear all environment variables
     for (const key of Object.keys(Deno.env.toObject())) {
-      if (key.startsWith('USER_') || key.startsWith('X_') || key.includes('_API_KEY') || key === 'SYSTEM_PROMPT') {
+      if (
+        key.startsWith('USER_') || key.startsWith('X_') || key.includes('_API_KEY') ||
+        key === 'SYSTEM_PROMPT'
+      ) {
         Deno.env.delete(key);
       }
     }
@@ -32,7 +35,7 @@ describe('Config validation', () => {
     }
 
     const { validateEnvironment } = await import('../config/validation.ts');
-    
+
     // Should not throw any error
     validateEnvironment();
   });
@@ -44,7 +47,7 @@ describe('Config validation', () => {
     }
 
     const { config } = await import('../config/env.ts');
-    
+
     assertEquals(config.github.token, 'test_github_token');
     assertEquals(config.github.username, 'test_user');
     assertEquals(config.twitter.apiKey, 'test_x_key');

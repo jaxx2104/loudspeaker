@@ -1,16 +1,9 @@
 import { getRecentStars } from '../services/github.ts';
 import { summarizeRepository } from '../services/summarizer.ts';
 import { postToX } from '../services/twitter.ts';
-import {
-  filterUnprocessedStars,
-  markStarAsProcessed,
-} from '../services/processed-stars.ts';
+import { filterUnprocessedStars, markStarAsProcessed } from '../services/processed-stars.ts';
 import type { StarData } from '../types/index.ts';
-import {
-  getWeightedLength,
-  MAX_SUMMARY_WEIGHT,
-  truncateToWeightedLength,
-} from './tweet-utils.ts';
+import { getWeightedLength, MAX_SUMMARY_WEIGHT, truncateToWeightedLength } from './tweet-utils.ts';
 
 export interface ProcessingResult {
   total: number;
@@ -31,7 +24,9 @@ export async function processStar(star: StarData): Promise<void> {
   const truncatedSummary = truncateToWeightedLength(summary, MAX_SUMMARY_WEIGHT);
   if (truncatedSummary !== summary) {
     console.log(
-      `[Processor] Summary truncated from ${getWeightedLength(summary)} to ${getWeightedLength(truncatedSummary)} weighted chars`,
+      `[Processor] Summary truncated from ${getWeightedLength(summary)} to ${
+        getWeightedLength(truncatedSummary)
+      } weighted chars`,
     );
   }
 

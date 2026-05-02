@@ -72,17 +72,17 @@ The AI's responsibility narrows to producing the `body` only. The English `"I ju
 
 #### New helper: `trimReadme`
 
-```typescript
+````typescript
 function trimReadme(readme: string, maxChars = 1500): string {
   return readme
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')   // badge images
-    .replace(/<!--[\s\S]*?-->/g, '')        // HTML comments
-    .replace(/```[\s\S]*?```/g, '')         // fenced code blocks
-    .replace(/\n{3,}/g, '\n\n')             // collapse blank lines
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '') // badge images
+    .replace(/<!--[\s\S]*?-->/g, '') // HTML comments
+    .replace(/```[\s\S]*?```/g, '') // fenced code blocks
+    .replace(/\n{3,}/g, '\n\n') // collapse blank lines
     .trim()
     .slice(0, maxChars);
 }
-```
+````
 
 Exported from `summarizer.ts` so it can be unit-tested in isolation.
 
@@ -116,7 +116,7 @@ export async function summarizeRepository(
   repositoryData: StarData,
   bodyBudget: number,
   modelType: ModelType = 'openrouter',
-): Promise<string>
+): Promise<string>;
 ```
 
 The recursive fallback path passes `bodyBudget` through unchanged.
@@ -157,11 +157,10 @@ Existing `truncateToWeightedLength`, weight constants (`MAX_TWEET_WEIGHT`, `T_CO
 
 ```typescript
 const prefix = `I just starred ${star.repo} - `;
-const bodyBudget =
-  MAX_TWEET_WEIGHT
-  - getWeightedLength(prefix)
-  - NEWLINE_WEIGHT
-  - T_CO_URL_WEIGHT;
+const bodyBudget = MAX_TWEET_WEIGHT -
+  getWeightedLength(prefix) -
+  NEWLINE_WEIGHT -
+  T_CO_URL_WEIGHT;
 
 const body = await summarizeRepository(star, bodyBudget);
 const message = `${prefix}${body}\n${star.url}`;
@@ -172,11 +171,11 @@ The previous `truncateToWeightedLength` call is removed from this layer; truncat
 
 ### `src/ai/agents.ts` (model identifier updates)
 
-| Agent | Old model | New model |
-|---|---|---|
+| Agent             | Old model           | New model             |
+| ----------------- | ------------------- | --------------------- |
 | `openrouterAgent` | `openai/gpt-5-nano` | `openai/gpt-5.4-nano` |
-| `deepseekAgent` | `deepseek-chat` | `deepseek-v4-flash` |
-| `mistralAgent` | `mistral-tiny` | `ministral-8b` |
+| `deepseekAgent`   | `deepseek-chat`     | `deepseek-v4-flash`   |
+| `mistralAgent`    | `mistral-tiny`      | `ministral-8b`        |
 
 Provider SDK packages remain unchanged (no `deno.json` import updates required for model swaps). Only model identifier strings change. At implementation time, verify the exact alias each provider expects (e.g., Mistral may require `ministral-8b-latest` rather than the bare family name).
 
@@ -190,12 +189,12 @@ Provider SDK packages remain unchanged (no `deno.json` import updates required f
 
 ### Unit tests
 
-| File | Subject | Cases |
-|---|---|---|
-| `src/tests/tweet-utils.test.ts` (new) | `truncateAtSentenceBoundary` | cuts at `。`; falls back to ellipsis when no sentence-ender; honors weighted length; handles full-width chars |
-| `src/tests/services.test.ts` (additions) | `trimReadme` | strips badges / code blocks / HTML comments; caps length; handles empty input |
-| `src/tests/services.test.ts` (additions) | `summarizeRepository` | passes `description` in messages; embeds `bodyBudget` in prompt string; retries once on too-long output; sentence-truncates after retry; throws on empty output |
-| `src/tests/core.test.ts` (additions) | message composition in `processStar` | template format matches; total weighted length ≤ 280; `bodyBudget` adjusts to repo-name length |
+| File                                     | Subject                              | Cases                                                                                                                                                           |
+| ---------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/tests/tweet-utils.test.ts` (new)    | `truncateAtSentenceBoundary`         | cuts at `。`; falls back to ellipsis when no sentence-ender; honors weighted length; handles full-width chars                                                   |
+| `src/tests/services.test.ts` (additions) | `trimReadme`                         | strips badges / code blocks / HTML comments; caps length; handles empty input                                                                                   |
+| `src/tests/services.test.ts` (additions) | `summarizeRepository`                | passes `description` in messages; embeds `bodyBudget` in prompt string; retries once on too-long output; sentence-truncates after retry; throws on empty output |
+| `src/tests/core.test.ts` (additions)     | message composition in `processStar` | template format matches; total weighted length ≤ 280; `bodyBudget` adjusts to repo-name length                                                                  |
 
 Mocks: Mastra agent `.generate` is mocked directly (existing pattern). No real network calls.
 
