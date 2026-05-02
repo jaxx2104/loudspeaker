@@ -30,54 +30,84 @@ export async function processOutput(
   return truncateAtSentenceBoundary(retried, bodyBudget);
 }
 
+function buildUserMessage(star: StarData, bodyBudget: number): string {
+  const readmeExcerpt = trimReadme(star.readme || '');
+  return [
+    '以下のリポジトリを日本語で要約してください。',
+    '',
+    `- repo: ${star.repo}`,
+    `- 公式説明: ${star.description ?? '(なし)'}`,
+    `- 主要言語: ${star.primaryLanguage}`,
+    '- README 抜粋:',
+    '---',
+    readmeExcerpt || '(なし)',
+    '---',
+    '',
+    '制約:',
+    `- 日本語で ${bodyBudget} weighted 文字以内（X 換算で）`,
+    '- 上記の「公式説明」「README 抜粋」に書かれている事実のみ使用',
+    '- 技術名・製品名・略語は元の表記を一文字も変えない（例: "YOLOv7" を "Yeo7" にしない）',
+    '- 出力に含めないもの: リポ名、URL、"I just starred"、ハッシュタグ、絵文字',
+    '- 1〜2 文で、何ができる/何が新しいか を述べる',
+  ].join('\n');
+}
+
 export async function summarizeRepository(
   repositoryData: StarData,
+  bodyBudget: number,
   modelType: ModelType = 'openrouter',
 ): Promise<string> {
-  const prompt = `
-- repo: ${repositoryData.repo || 'Unknown Repository'}
-- primaryLanguage: ${repositoryData.primaryLanguage || 'Unknown Technology'}
-- readme: ${repositoryData.readme || 'No README provided'}
-`;
+  let agent;
+  switch (modelType) {
+    case 'openrouter':
+      agent = mastra.getAgent('openrouterAgent');
+      break;
+    case 'deepseek':
+      agent = mastra.getAgent('deepseekAgent');
+      break;
+    case 'mistral':
+      agent = mastra.getAgent('mistralAgent');
+      break;
+    default:
+      agent = mastra.getAgent('openrouterAgent');
+  }
 
-  const messages: Message[] = [{ role: 'user', content: prompt }];
+  const userMessage = buildUserMessage(repositoryData, bodyBudget);
+  const messages: Message[] = [{ role: 'user', content: userMessage }];
   const options: GenerateOptions = { temperature: 0.3 };
 
   try {
-    // Fallback order: OpenRouter -> DeepSeek -> Mistral
-    let agent;
-    switch (modelType) {
-      case 'openrouter':
-        agent = mastra.getAgent('openrouterAgent');
-        break;
-      case 'deepseek':
-        agent = mastra.getAgent('deepseekAgent');
-        break;
-      case 'mistral':
-        agent = mastra.getAgent('mistralAgent');
-        break;
-      default:
-        agent = mastra.getAgent('openrouterAgent');
-    }
-
     const result = await agent.generate(messages, options);
-    return result.text;
+    const initialText = result.text ?? '';
+
+    const retryFn = async (): Promise<string> => {
+      const initialWeight = getWeightedLength(initialText.trim());
+      const retryMessages: Message[] = [
+        ...messages,
+        { role: 'assistant', content: initialText },
+        {
+          role: 'user',
+          content: `先ほどの出力は ${initialWeight} weighted 文字でした。` +
+            `${bodyBudget} weighted 文字以内に短縮した日本語要約のみを返してください。`,
+        },
+      ];
+      const retried = await agent.generate(retryMessages, options);
+      return retried.text ?? '';
+    };
+
+    return await processOutput(initialText, bodyBudget, retryFn);
   } catch (error) {
     console.error(`Error in summarizeRepository with ${modelType}:`, error);
 
-    // Fallback chain: OpenRouter -> DeepSeek -> Mistral
     if (modelType === 'openrouter') {
       console.log('Falling back to DeepSeek...');
-      return summarizeRepository(repositoryData, 'deepseek');
+      return summarizeRepository(repositoryData, bodyBudget, 'deepseek');
     } else if (modelType === 'deepseek') {
       console.log('Falling back to Mistral...');
-      return summarizeRepository(repositoryData, 'mistral');
+      return summarizeRepository(repositoryData, bodyBudget, 'mistral');
     } else {
-      // If all models fail, return basic error message
       console.error('All models failed, returning basic summary');
-      return `I just starred ${
-        repositoryData.repo || 'Unknown Repository'
-      } - Unable to generate summary`;
+      return 'Unable to generate summary';
     }
   }
 }
