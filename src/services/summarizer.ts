@@ -1,5 +1,6 @@
 import { mastra } from '../ai/agents.ts';
 import type { GenerateOptions, Message, ModelType, StarData } from '../types/index.ts';
+import { getWeightedLength, truncateAtSentenceBoundary } from '../core/tweet-utils.ts';
 
 /** Strip noisy markdown chrome and cap length for prompt-friendliness. */
 export function trimReadme(readme: string, maxChars = 1500): string {
@@ -10,6 +11,23 @@ export function trimReadme(readme: string, maxChars = 1500): string {
     .replace(/\n{3,}/g, '\n\n') // collapse blank lines
     .trim()
     .slice(0, maxChars);
+}
+
+/** Validate, optionally retry once, and final-truncate the model's output. */
+export async function processOutput(
+  text: string,
+  bodyBudget: number,
+  retryFn: () => Promise<string>,
+): Promise<string> {
+  const trimmed = text.trim();
+  if (trimmed.length < 10) {
+    throw new Error(`Summary too short or empty (len=${trimmed.length})`);
+  }
+  if (getWeightedLength(trimmed) <= bodyBudget) return trimmed;
+
+  const retried = (await retryFn()).trim();
+  if (getWeightedLength(retried) <= bodyBudget) return retried;
+  return truncateAtSentenceBoundary(retried, bodyBudget);
 }
 
 export async function summarizeRepository(

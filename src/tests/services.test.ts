@@ -1,7 +1,8 @@
 import { assertEquals, assertExists } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
 import type { StarData } from '../types/index.ts';
-import { trimReadme } from '../services/summarizer.ts';
+import { processOutput, trimReadme } from '../services/summarizer.ts';
+import { getWeightedLength } from '../core/tweet-utils.ts';
 
 // Mock data for testing
 const mockStarData: StarData = {
@@ -119,5 +120,56 @@ describe('trimReadme', () => {
 
   it('handles empty string', () => {
     assertEquals(trimReadme(''), '');
+  });
+});
+
+describe('processOutput', () => {
+  it('returns trimmed text when within budget', async () => {
+    const result = await processOutput(
+      '  hello world  ',
+      50,
+      () => Promise.resolve('SHOULD_NOT_BE_CALLED'),
+    );
+    assertEquals(result, 'hello world');
+  });
+
+  it('throws on too-short output', async () => {
+    let err: Error | null = null;
+    try {
+      await processOutput('hi', 50, () => Promise.resolve(''));
+    } catch (e) {
+      err = e as Error;
+    }
+    assertEquals(err !== null, true);
+    assertEquals(err!.message.toLowerCase().includes('too short'), true);
+  });
+
+  it('throws on empty output', async () => {
+    let err: Error | null = null;
+    try {
+      await processOutput('', 50, () => Promise.resolve(''));
+    } catch (e) {
+      err = e as Error;
+    }
+    assertEquals(err !== null, true);
+  });
+
+  it('retries once when too long, returns retry result if within budget', async () => {
+    let retryCount = 0;
+    const retryFn = () => {
+      retryCount++;
+      return Promise.resolve('短い要約です。');
+    };
+    const longText = 'これは長すぎる要約です。'.repeat(20);
+    const result = await processOutput(longText, 30, retryFn);
+    assertEquals(retryCount, 1);
+    assertEquals(result, '短い要約です。');
+  });
+
+  it('falls back to truncateAtSentenceBoundary when retry still too long', async () => {
+    const longText = 'これは長すぎる要約です。これは二番目の文です。'.repeat(5);
+    const stillLong = 'これは最初の文です。これも長すぎます。'.repeat(5);
+    const result = await processOutput(longText, 22, () => Promise.resolve(stillLong));
+    assertEquals(getWeightedLength(result) <= 22, true);
   });
 });
