@@ -84,7 +84,7 @@ export async function summarizeRepository(
       const initialWeight = getWeightedLength(initialText.trim());
       const retryMessages: Message[] = [
         ...messages,
-        { role: 'assistant', content: initialText },
+        { role: 'assistant', content: initialText.trim() },
         {
           role: 'user',
           content: `先ほどの出力は ${initialWeight} weighted 文字でした。` +
