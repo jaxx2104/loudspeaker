@@ -8,19 +8,19 @@ import { config } from '../config/env.ts';
 export const openrouterAgent = new Agent({
   name: 'openrouterAgent',
   instructions: config.systemPrompt,
-  model: openrouter('openai/gpt-5-nano'),
+  model: openrouter('openai/gpt-5.4-nano'),
 });
 
 export const deepseekAgent = new Agent({
   name: 'deepseekAgent',
   instructions: config.systemPrompt,
-  model: deepseek('deepseek-chat'),
+  model: deepseek('deepseek-v4-flash'),
 });
 
 export const mistralAgent = new Agent({
   name: 'mistralAgent',
   instructions: config.systemPrompt,
-  model: mistral('mistral-tiny'),
+  model: mistral('ministral-3-8b-2512'),
 });
 
 export const mastra = new Mastra({
