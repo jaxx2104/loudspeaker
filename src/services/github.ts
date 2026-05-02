@@ -72,7 +72,9 @@ export async function getRecentStars(): Promise<StarData[]> {
       for (const edge of edges) {
         const starredAt = new Date(edge.starredAt);
         if (starredAt > timeWindowAgo) {
-          console.log(`[GitHub] Found recent star: ${edge.node.nameWithOwner} (starred at: ${edge.starredAt})`);
+          console.log(
+            `[GitHub] Found recent star: ${edge.node.nameWithOwner} (starred at: ${edge.starredAt})`,
+          );
           stars.push({
             repo: edge.node.nameWithOwner,
             description: edge.node.description,
@@ -82,7 +84,9 @@ export async function getRecentStars(): Promise<StarData[]> {
             starredAt,
           });
         } else {
-          console.log(`[GitHub] Star ${edge.node.nameWithOwner} is outside time window, stopping pagination`);
+          console.log(
+            `[GitHub] Star ${edge.node.nameWithOwner} is outside time window, stopping pagination`,
+          );
           hasNextPage = false;
           break;
         }

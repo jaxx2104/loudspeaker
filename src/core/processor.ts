@@ -1,15 +1,13 @@
 import { getRecentStars } from '../services/github.ts';
 import { summarizeRepository } from '../services/summarizer.ts';
 import { postToX } from '../services/twitter.ts';
-import {
-  filterUnprocessedStars,
-  markStarAsProcessed,
-} from '../services/processed-stars.ts';
+import { filterUnprocessedStars, markStarAsProcessed } from '../services/processed-stars.ts';
 import type { StarData } from '../types/index.ts';
 import {
   getWeightedLength,
-  MAX_SUMMARY_WEIGHT,
-  truncateToWeightedLength,
+  MAX_TWEET_WEIGHT,
+  NEWLINE_WEIGHT,
+  T_CO_URL_WEIGHT,
 } from './tweet-utils.ts';
 
 export interface ProcessingResult {
@@ -20,22 +18,32 @@ export interface ProcessingResult {
   errors: Array<{ repo: string; error: string }>;
 }
 
+const POST_PREFIX = (repo: string) => `I just starred ${repo} - `;
+
+/** Compute the weighted character budget for the AI-generated body. */
+export function computeBodyBudget(repo: string): number {
+  return (
+    MAX_TWEET_WEIGHT -
+    getWeightedLength(POST_PREFIX(repo)) -
+    NEWLINE_WEIGHT -
+    T_CO_URL_WEIGHT
+  );
+}
+
+/** Build the final tweet text from repo, body, and url. */
+export function buildPostMessage(repo: string, body: string, url: string): string {
+  return `${POST_PREFIX(repo)}${body}\n${url}`;
+}
+
 export async function processStar(star: StarData): Promise<void> {
   console.log(`[Processor] Starting to process: ${star.repo}`);
 
-  console.log(`[Processor] Generating AI summary for ${star.repo}...`);
-  const summary = await summarizeRepository(star);
-  console.log(`[Processor] Summary generated (${summary.length} chars)`);
+  const bodyBudget = computeBodyBudget(star.repo);
+  console.log(`[Processor] Generating AI summary for ${star.repo} (budget=${bodyBudget})...`);
+  const body = await summarizeRepository(star, bodyBudget);
+  console.log(`[Processor] Summary generated (${getWeightedLength(body)} weighted chars)`);
 
-  // Truncate summary to fit within X's 280 weighted character limit
-  const truncatedSummary = truncateToWeightedLength(summary, MAX_SUMMARY_WEIGHT);
-  if (truncatedSummary !== summary) {
-    console.log(
-      `[Processor] Summary truncated from ${getWeightedLength(summary)} to ${getWeightedLength(truncatedSummary)} weighted chars`,
-    );
-  }
-
-  const message = `${truncatedSummary}\n${star.url}`;
+  const message = buildPostMessage(star.repo, body, star.url);
   console.log(`[Processor] Posting to X...`);
   await postToX(message);
 

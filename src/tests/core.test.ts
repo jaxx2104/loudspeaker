@@ -1,7 +1,12 @@
 import { assertEquals } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
 import type { StarData } from '../types/index.ts';
-import { getWeightedLength, truncateToWeightedLength } from '../core/tweet-utils.ts';
+import { buildPostMessage, computeBodyBudget } from '../core/processor.ts';
+import {
+  getWeightedLength,
+  MAX_TWEET_WEIGHT,
+  truncateToWeightedLength,
+} from '../core/tweet-utils.ts';
 
 // Mock star data for testing
 const mockStarData: StarData = {
@@ -93,5 +98,44 @@ describe('truncateToWeightedLength', () => {
 
   it('should handle single character text', () => {
     assertEquals(truncateToWeightedLength('a', 1), 'a');
+  });
+});
+
+describe('computeBodyBudget', () => {
+  it('returns a smaller budget for longer repo names', () => {
+    const shortRepo = computeBodyBudget('a/b');
+    const longRepo = computeBodyBudget('very-long-org-name/very-long-repo-name');
+    assertEquals(shortRepo > longRepo, true);
+  });
+
+  it('returns a positive budget for normal repo names', () => {
+    assertEquals(computeBodyBudget('test-org/test-repo') > 0, true);
+  });
+
+  it('subtracts the prefix and URL/newline weights from MAX_TWEET_WEIGHT', () => {
+    // "I just starred a/b - " = 21 ASCII chars. URL t.co weight = 23. Newline = 1.
+    // Expected: 280 - 21 - 1 - 23 = 235
+    assertEquals(computeBodyBudget('a/b'), 235);
+  });
+});
+
+describe('buildPostMessage', () => {
+  it('formats with prefix and url separated by newline', () => {
+    const msg = buildPostMessage('owner/repo', '本文です', 'https://github.com/owner/repo');
+    assertEquals(msg, 'I just starred owner/repo - 本文です\nhttps://github.com/owner/repo');
+  });
+
+  it('produces a message whose total weighted length fits when body fits its budget', () => {
+    const repo = 'test-org/awesome-project';
+    const url = 'https://github.com/test-org/awesome-project';
+    const budget = computeBodyBudget(repo);
+    const body = 'a'.repeat(budget);
+    const msg = buildPostMessage(repo, body, url);
+    const prefix = `I just starred ${repo} - `;
+    const weighted = getWeightedLength(prefix) + getWeightedLength(body) + 1 /* \n */ +
+      23 /* t.co */;
+    assertEquals(weighted <= MAX_TWEET_WEIGHT, true);
+    assertEquals(msg.startsWith(prefix), true);
+    assertEquals(msg.endsWith(url), true);
   });
 });

@@ -124,7 +124,7 @@ This project uses a **Service Layer Pattern** with TypeScript and Deno, followin
 
 **AI Integration:**
 
-- Primary model: OpenRouter GPT-5-nano with fallback chain (OpenRouter → DeepSeek → Mistral)
+- Primary: a current-generation lightweight model on OpenRouter, with fallback chain (OpenRouter → DeepSeek → Mistral); concrete model IDs live in `src/ai/agents.ts`
 - AI providers configured in `ai/providers/` directory for clean separation
 - Mastra agents managed in `ai/agents.ts` with unified configuration
 - Uses Mastra framework with AI SDK for consistent LLM operations

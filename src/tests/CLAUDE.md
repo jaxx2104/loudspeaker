@@ -65,6 +65,7 @@ const mockStarData: StarData = {
 ### Assertions
 
 Common assertions from `@std/assert`:
+
 - `assertEquals(actual, expected)` - Strict equality
 - `assertExists(value)` - Not null/undefined
 - `assertThrows(fn)` - Function throws error

@@ -88,7 +88,11 @@ export async function filterUnprocessedStars(stars: StarData[]): Promise<StarDat
 
   const unprocessed = stars.filter((star) => !processedUrls.has(star.url));
 
-  console.log(`[Cache] Filtered stars: ${stars.length} total, ${unprocessed.length} unprocessed, ${stars.length - unprocessed.length} already processed`);
+  console.log(
+    `[Cache] Filtered stars: ${stars.length} total, ${unprocessed.length} unprocessed, ${
+      stars.length - unprocessed.length
+    } already processed`,
+  );
 
   return unprocessed;
 }

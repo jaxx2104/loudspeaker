@@ -3,7 +3,6 @@
 export const T_CO_URL_WEIGHT = 23;
 export const MAX_TWEET_WEIGHT = 280;
 export const NEWLINE_WEIGHT = 1;
-export const MAX_SUMMARY_WEIGHT = MAX_TWEET_WEIGHT - T_CO_URL_WEIGHT - NEWLINE_WEIGHT;
 
 /**
  * Check if a Unicode code point is a double-weight character in X's counting.
@@ -58,4 +57,32 @@ export function truncateToWeightedLength(text: string, maxWeight: number): strin
   }
 
   return text;
+}
+
+const SENTENCE_ENDERS = new Set(['\u3002', '\uff0e', '\uff01', '\uff1f', '!', '?', '\n']);
+
+/** Truncate text at the last sentence-ender within the weighted budget. */
+export function truncateAtSentenceBoundary(
+  text: string,
+  maxWeight: number,
+): string {
+  if (getWeightedLength(text) <= maxWeight) return text;
+
+  let weight = 0;
+  let byteIndex = 0;
+  let bestCutAt = -1;
+
+  for (const char of text) {
+    const code = char.codePointAt(0) ?? 0;
+    const charWeight = isDoubleWeightChar(code) ? 2 : 1;
+    if (weight + charWeight > maxWeight) break;
+    weight += charWeight;
+    byteIndex += char.length;
+    if (SENTENCE_ENDERS.has(char)) {
+      bestCutAt = byteIndex;
+    }
+  }
+
+  if (bestCutAt > 0) return text.slice(0, bestCutAt);
+  return truncateToWeightedLength(text, maxWeight);
 }
