@@ -1,6 +1,17 @@
 import { mastra } from '../ai/agents.ts';
 import type { GenerateOptions, Message, ModelType, StarData } from '../types/index.ts';
 
+/** Strip noisy markdown chrome and cap length for prompt-friendliness. */
+export function trimReadme(readme: string, maxChars = 1500): string {
+  return readme
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '') // badge images
+    .replace(/<!--[\s\S]*?-->/g, '') // HTML comments
+    .replace(/```[\s\S]*?```/g, '') // fenced code blocks
+    .replace(/\n{3,}/g, '\n\n') // collapse blank lines
+    .trim()
+    .slice(0, maxChars);
+}
+
 export async function summarizeRepository(
   repositoryData: StarData,
   modelType: ModelType = 'openrouter',

@@ -1,6 +1,7 @@
 import { assertEquals, assertExists } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
 import type { StarData } from '../types/index.ts';
+import { trimReadme } from '../services/summarizer.ts';
 
 // Mock data for testing
 const mockStarData: StarData = {
@@ -89,5 +90,34 @@ describe('Services', () => {
 
       assertEquals(prompt.includes('No README provided'), true);
     });
+  });
+});
+
+describe('trimReadme', () => {
+  it('removes badge images', () => {
+    const input = 'Hello ![badge](https://img.shields.io/x.svg) world';
+    assertEquals(trimReadme(input), 'Hello  world');
+  });
+
+  it('removes HTML comments', () => {
+    const input = '<!-- hidden -->visible';
+    assertEquals(trimReadme(input), 'visible');
+  });
+
+  it('removes fenced code blocks', () => {
+    const input = 'before\n```ts\nconst x = 1;\n```\nafter';
+    const result = trimReadme(input);
+    assertEquals(result.includes('const x'), false);
+    assertEquals(result.includes('before'), true);
+    assertEquals(result.includes('after'), true);
+  });
+
+  it('caps length at maxChars', () => {
+    const input = 'a'.repeat(2000);
+    assertEquals(trimReadme(input, 1500).length, 1500);
+  });
+
+  it('handles empty string', () => {
+    assertEquals(trimReadme(''), '');
   });
 });
