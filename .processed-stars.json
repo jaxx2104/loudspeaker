@@ -1,20 +1,8 @@
 {
   "processedStars": [
     {
-      "url": "https://github.com/tandpfun/skill-icons",
-      "processedAt": "2026-07-15T16:02:40.583Z"
-    },
-    {
-      "url": "https://github.com/deepseek-ai/DeepSpec",
-      "processedAt": "2026-07-15T16:02:42.851Z"
-    },
-    {
-      "url": "https://github.com/nashsu/llm_wiki",
-      "processedAt": "2026-07-16T10:34:49.366Z"
-    },
-    {
-      "url": "https://github.com/mnemosyne-oss/mnemosyne",
-      "processedAt": "2026-07-16T14:20:59.312Z"
+      "url": "https://github.com/tokio-rs/topcoat",
+      "processedAt": "2026-07-24T00:55:22.356Z"
     }
   ]
 }
