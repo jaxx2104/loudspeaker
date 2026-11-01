@@ -60,10 +60,10 @@ export async function getRecentStars(): Promise<StarData[]> {
   while (hasNextPage) {
     try {
       console.log(`[GitHub] Querying starred repositories${cursor ? ' (next page)' : ''}...`);
-      const response = await graphqlWithAuth(query, {
+      const response = (await graphqlWithAuth(query, {
         username: config.github.username,
         cursor,
-      }) as GitHubResponse;
+      })) as GitHubResponse;
 
       const edges = response.user.starredRepositories.edges;
       console.log(`[GitHub] Retrieved ${edges.length} stars in current page`);

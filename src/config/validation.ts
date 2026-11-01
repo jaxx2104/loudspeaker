@@ -12,10 +12,10 @@ const requiredEnvVars = [
 ] as const;
 
 export function getEnvVar(name: string): string {
-  const value = Deno.env.get(name);
+  const value = process.env[name];
   if (!value) {
     console.error(`Error: ${name} is not set in environment variables`);
-    Deno.exit(1);
+    process.exit(1);
   }
   return value;
 }

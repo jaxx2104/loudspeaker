@@ -1,9 +1,7 @@
-import { load } from 'https://deno.land/std@0.224.0/dotenv/mod.ts';
 import type { Config } from '../types/index.ts';
 import { getEnvVar, validateEnvironment } from './validation.ts';
 
-// Load .env file
-await load({ export: true });
+// .env is loaded automatically by Bun at startup
 
 // Validate all required environment variables exist
 validateEnvironment();

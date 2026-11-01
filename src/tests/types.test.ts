@@ -1,5 +1,4 @@
-import { assertEquals } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'bun:test';
 import type { Config, ModelType, StarData } from '../types/index.ts';
 
 describe('Type definitions', () => {
@@ -27,9 +26,9 @@ describe('Type definitions', () => {
       systemPrompt: 'Test prompt',
     };
 
-    assertEquals(typeof mockConfig.github.token, 'string');
-    assertEquals(typeof mockConfig.twitter.apiKey, 'string');
-    assertEquals(typeof mockConfig.systemPrompt, 'string');
+    expect(typeof mockConfig.github.token).toEqual('string');
+    expect(typeof mockConfig.twitter.apiKey).toEqual('string');
+    expect(typeof mockConfig.systemPrompt).toEqual('string');
   });
 
   it('should define StarData interface correctly', () => {
@@ -42,17 +41,17 @@ describe('Type definitions', () => {
       starredAt: new Date(),
     };
 
-    assertEquals(typeof mockStarData.repo, 'string');
-    assertEquals(typeof mockStarData.url, 'string');
-    assertEquals(mockStarData.starredAt instanceof Date, true);
+    expect(typeof mockStarData.repo).toEqual('string');
+    expect(typeof mockStarData.url).toEqual('string');
+    expect(mockStarData.starredAt instanceof Date).toEqual(true);
   });
 
   it('should define ModelType union correctly', () => {
     const validModels: ModelType[] = ['openrouter', 'deepseek', 'mistral'];
 
     for (const model of validModels) {
-      assertEquals(typeof model, 'string');
-      assertEquals(['openrouter', 'deepseek', 'mistral'].includes(model), true);
+      expect(typeof model).toEqual('string');
+      expect(['openrouter', 'deepseek', 'mistral'].includes(model)).toEqual(true);
     }
   });
 
@@ -66,7 +65,7 @@ describe('Type definitions', () => {
       starredAt: new Date(),
     };
 
-    assertEquals(starDataWithNulls.description, null);
-    assertEquals(typeof starDataWithNulls.repo, 'string');
+    expect(starDataWithNulls.description).toEqual(null);
+    expect(typeof starDataWithNulls.repo).toEqual('string');
   });
 });

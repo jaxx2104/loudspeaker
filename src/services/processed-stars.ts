@@ -1,7 +1,8 @@
+import { readFile, writeFile } from 'node:fs/promises';
 import type { StarData } from '../types/index.ts';
 
 // Cache file path - can be overridden via environment variable for GitHub Actions cache
-const CACHE_FILE_PATH = Deno.env.get('PROCESSED_STARS_CACHE') || '.processed-stars.json';
+const CACHE_FILE_PATH = process.env.PROCESSED_STARS_CACHE || '.processed-stars.json';
 
 // How long to keep processed star records (24 hours)
 const RETENTION_HOURS = 24;
@@ -17,12 +18,12 @@ interface CacheData {
 
 async function loadCache(): Promise<CacheData> {
   try {
-    const content = await Deno.readTextFile(CACHE_FILE_PATH);
+    const content = await readFile(CACHE_FILE_PATH, 'utf8');
     const data = JSON.parse(content) as CacheData;
     console.log(`[Cache] Loaded ${data.processedStars.length} processed stars from cache`);
     return data;
   } catch (error) {
-    if (error instanceof Deno.errors.NotFound) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       console.log('[Cache] No existing cache file found, starting fresh');
       return { processedStars: [] };
     }
@@ -33,7 +34,7 @@ async function loadCache(): Promise<CacheData> {
 
 async function saveCache(data: CacheData): Promise<void> {
   try {
-    await Deno.writeTextFile(CACHE_FILE_PATH, JSON.stringify(data, null, 2));
+    await writeFile(CACHE_FILE_PATH, JSON.stringify(data, null, 2));
     console.log(`[Cache] Saved ${data.processedStars.length} processed stars to cache`);
   } catch (error) {
     console.error('[Cache] Error saving cache:', error);

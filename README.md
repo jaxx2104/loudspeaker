@@ -16,7 +16,6 @@ A GitHub Action that automatically shares starred repositories on X (Twitter) ev
 1. Fork this repository or copy the workflow file to your repository.
 
 2. Set up the following GitHub Secrets:
-
    - `USER_GITHUB_TOKEN`: GitHub Personal Access Token
    - `USER_GITHUB_NAME`: Your GitHub username
    - `X_API_KEY`: X API Consumer Key
@@ -34,24 +33,29 @@ A GitHub Action that automatically shares starred repositories on X (Twitter) ev
 
 ## Development Commands
 
+The runtime is [Bun](https://bun.sh/). Its version is pinned in `mise.toml` / `mise.lock`, so run `mise install` first if you use [mise](https://mise.jdx.dev/).
+
 ```bash
-# Run the application locally
-deno task start
+# Install dependencies
+bun install
+
+# Run the application locally (.env is loaded automatically by Bun)
+bun run start
 
 # Run with file watching (development mode)
-deno task dev
+bun run dev
 
-# Test the Mastra summarizer with all providers
-deno task test
+# Run tests
+bun test
 
 # Type check all TypeScript files
-deno task check
+bun run check
 
-# Format code
-deno task fmt
+# Format code (Biome)
+bun run fmt
 
-# Lint code
-deno task lint
+# Lint code (Biome)
+bun run lint
 ```
 
 ## Project Structure
@@ -112,7 +116,7 @@ src/
 
 ## Architecture
 
-This project uses a **Service Layer Pattern** with TypeScript and Deno, following modular design principles:
+This project uses a **Service Layer Pattern** with TypeScript and Bun, following modular design principles:
 
 **Key Flow:**
 

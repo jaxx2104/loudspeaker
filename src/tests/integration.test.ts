@@ -1,20 +1,6 @@
-import { assertEquals } from '@std/assert';
-import { beforeEach, describe, it } from '@std/testing/bdd';
+import { beforeEach, describe, expect, it } from 'bun:test';
 import type { StarData } from '../types/index.ts';
-
-// Mock environment variables
-const mockEnvVars = {
-  USER_GITHUB_TOKEN: 'mock_github_token',
-  USER_GITHUB_NAME: 'mock_user',
-  X_API_KEY: 'mock_x_api_key',
-  X_API_SECRET: 'mock_x_api_secret',
-  X_ACCESS_TOKEN: 'mock_x_access_token',
-  X_ACCESS_SECRET: 'mock_x_access_secret',
-  OPENROUTER_API_KEY: 'mock_openrouter_key',
-  DEEPSEEK_API_KEY: 'mock_deepseek_key',
-  MISTRAL_API_KEY: 'mock_mistral_key',
-  SYSTEM_PROMPT: 'Create a concise summary of this repository.',
-};
+import { mockEnvVars } from './setup.ts';
 
 // Mock star data
 const mockStarData: StarData = {
@@ -30,7 +16,7 @@ describe('Integration Tests', () => {
   beforeEach(() => {
     // Set up mock environment variables
     for (const [key, value] of Object.entries(mockEnvVars)) {
-      Deno.env.set(key, value);
+      process.env[key] = value;
     }
   });
 
@@ -38,22 +24,22 @@ describe('Integration Tests', () => {
     // This test verifies the data flow without making actual API calls
 
     // 1. Verify star data structure
-    assertEquals(typeof mockStarData.repo, 'string');
-    assertEquals(mockStarData.url.startsWith('https://'), true);
-    assertEquals(mockStarData.starredAt instanceof Date, true);
+    expect(typeof mockStarData.repo).toEqual('string');
+    expect(mockStarData.url.startsWith('https://')).toEqual(true);
+    expect(mockStarData.starredAt instanceof Date).toEqual(true);
 
     // 2. Verify configuration loading
     const { config } = await import('../config/env.ts');
-    assertEquals(config.github.token, 'mock_github_token');
-    assertEquals(config.systemPrompt, 'Create a concise summary of this repository.');
+    expect(config.github.token).toEqual('mock_github_token');
+    expect(config.systemPrompt).toEqual('Create a concise summary of this repository.');
 
     // 3. Verify message formatting
     const mockSummary = 'Sample Node.js app for testing integration workflows';
     const expectedMessage = `${mockSummary}\n${mockStarData.url}`;
 
-    assertEquals(expectedMessage.includes(mockSummary), true);
-    assertEquals(expectedMessage.includes(mockStarData.url), true);
-    assertEquals(expectedMessage.split('\n').length, 2);
+    expect(expectedMessage.includes(mockSummary)).toEqual(true);
+    expect(expectedMessage.includes(mockStarData.url)).toEqual(true);
+    expect(expectedMessage.split('\n').length).toEqual(2);
   });
 
   it('should handle multiple star data items', () => {
@@ -74,15 +60,15 @@ describe('Integration Tests', () => {
       },
     ];
 
-    assertEquals(multipleStars.length, 3);
-    assertEquals(multipleStars[1]?.primaryLanguage, 'Python');
-    assertEquals(multipleStars[2]?.description, null);
+    expect(multipleStars.length).toEqual(3);
+    expect(multipleStars[1]?.primaryLanguage).toEqual('Python');
+    expect(multipleStars[2]?.description).toEqual(null);
 
     // Verify all items have required fields
     for (const star of multipleStars) {
-      assertEquals(typeof star.repo, 'string');
-      assertEquals(star.url.startsWith('https://'), true);
-      assertEquals(star.starredAt instanceof Date, true);
+      expect(typeof star.repo).toEqual('string');
+      expect(star.url.startsWith('https://')).toEqual(true);
+      expect(star.starredAt instanceof Date).toEqual(true);
     }
   });
 
@@ -90,14 +76,14 @@ describe('Integration Tests', () => {
     const { config } = await import('../config/env.ts');
 
     // Verify all AI providers are configured
-    assertEquals(typeof config.openrouter.apiKey, 'string');
-    assertEquals(typeof config.deepseek.apiKey, 'string');
-    assertEquals(typeof config.mistral.apiKey, 'string');
+    expect(typeof config.openrouter.apiKey).toEqual('string');
+    expect(typeof config.deepseek.apiKey).toEqual('string');
+    expect(typeof config.mistral.apiKey).toEqual('string');
 
     // Verify the expected fallback order exists
     const expectedProviders = ['openrouter', 'deepseek', 'mistral'];
     for (const provider of expectedProviders) {
-      assertEquals(typeof provider, 'string');
+      expect(typeof provider).toEqual('string');
     }
   });
 
@@ -109,7 +95,7 @@ describe('Integration Tests', () => {
     };
 
     // The system should handle this gracefully
-    assertEquals(typeof malformedData.repo, 'string');
-    assertEquals(typeof malformedData.starredAt, 'string'); // Invalid but caught
+    expect(typeof malformedData.repo).toEqual('string');
+    expect(typeof malformedData.starredAt).toEqual('string'); // Invalid but caught
   });
 });

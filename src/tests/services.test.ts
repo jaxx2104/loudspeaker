@@ -1,8 +1,7 @@
-import { assertEquals, assertExists } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
-import type { StarData } from '../types/index.ts';
-import { processOutput, trimReadme } from '../services/summarizer.ts';
+import { describe, expect, it } from 'bun:test';
 import { getWeightedLength } from '../core/tweet-utils.ts';
+import { processOutput, trimReadme } from '../services/summarizer.ts';
+import type { StarData } from '../types/index.ts';
 
 // Mock data for testing
 const mockStarData: StarData = {
@@ -17,9 +16,9 @@ const mockStarData: StarData = {
 describe('Services', () => {
   describe('GitHub Service', () => {
     it('should handle StarData structure correctly', () => {
-      assertEquals(mockStarData.repo.includes('/'), true);
-      assertEquals(mockStarData.url.startsWith('https://github.com/'), true);
-      assertExists(mockStarData.starredAt);
+      expect(mockStarData.repo.includes('/')).toEqual(true);
+      expect(mockStarData.url.startsWith('https://github.com/')).toEqual(true);
+      expect(mockStarData.starredAt).not.toBeNil();
     });
 
     it('should handle repository with no description', () => {
@@ -28,8 +27,8 @@ describe('Services', () => {
         description: null,
       };
 
-      assertEquals(repoWithoutDesc.description, null);
-      assertExists(repoWithoutDesc.repo);
+      expect(repoWithoutDesc.description).toEqual(null);
+      expect(repoWithoutDesc.repo).not.toBeNil();
     });
 
     it('should validate star timestamp', () => {
@@ -39,8 +38,8 @@ describe('Services', () => {
         starredAt: now,
       };
 
-      assertEquals(starredRepo.starredAt instanceof Date, true);
-      assertEquals(starredRepo.starredAt.getTime(), now.getTime());
+      expect(starredRepo.starredAt instanceof Date).toEqual(true);
+      expect(starredRepo.starredAt.getTime()).toEqual(now.getTime());
     });
   });
 
@@ -49,9 +48,9 @@ describe('Services', () => {
       const summary = 'Awesome TypeScript project with best practices';
       const expectedMessage = `${summary}\n${mockStarData.url}`;
 
-      assertEquals(expectedMessage.includes(summary), true);
-      assertEquals(expectedMessage.includes(mockStarData.url), true);
-      assertEquals(expectedMessage.includes('\n'), true);
+      expect(expectedMessage.includes(summary)).toEqual(true);
+      expect(expectedMessage.includes(mockStarData.url)).toEqual(true);
+      expect(expectedMessage.includes('\n')).toEqual(true);
     });
 
     it('should handle long summaries', () => {
@@ -59,8 +58,8 @@ describe('Services', () => {
         'This is a very long summary that might exceed typical social media character limits but should still be handled gracefully by the system';
       const message = `${longSummary}\n${mockStarData.url}`;
 
-      assertEquals(message.length > mockStarData.url.length, true);
-      assertEquals(message.endsWith(mockStarData.url), true);
+      expect(message.length > mockStarData.url.length).toEqual(true);
+      expect(message.endsWith(mockStarData.url)).toEqual(true);
     });
   });
 
@@ -72,9 +71,9 @@ describe('Services', () => {
 - readme: ${mockStarData.readme}
 `;
 
-      assertEquals(prompt.includes(mockStarData.repo), true);
-      assertEquals(prompt.includes(mockStarData.primaryLanguage), true);
-      assertEquals(prompt.includes(mockStarData.readme), true);
+      expect(prompt.includes(mockStarData.repo)).toEqual(true);
+      expect(prompt.includes(mockStarData.primaryLanguage)).toEqual(true);
+      expect(prompt.includes(mockStarData.readme)).toEqual(true);
     });
 
     it('should handle missing readme content', () => {
@@ -89,7 +88,7 @@ describe('Services', () => {
 - readme: ${dataWithoutReadme.readme || 'No README provided'}
 `;
 
-      assertEquals(prompt.includes('No README provided'), true);
+      expect(prompt.includes('No README provided')).toEqual(true);
     });
   });
 });
@@ -97,61 +96,46 @@ describe('Services', () => {
 describe('trimReadme', () => {
   it('removes badge images', () => {
     const input = 'Hello ![badge](https://img.shields.io/x.svg) world';
-    assertEquals(trimReadme(input), 'Hello  world');
+    expect(trimReadme(input)).toEqual('Hello  world');
   });
 
   it('removes HTML comments', () => {
     const input = '<!-- hidden -->visible';
-    assertEquals(trimReadme(input), 'visible');
+    expect(trimReadme(input)).toEqual('visible');
   });
 
   it('removes fenced code blocks', () => {
     const input = 'before\n```ts\nconst x = 1;\n```\nafter';
     const result = trimReadme(input);
-    assertEquals(result.includes('const x'), false);
-    assertEquals(result.includes('before'), true);
-    assertEquals(result.includes('after'), true);
+    expect(result.includes('const x')).toEqual(false);
+    expect(result.includes('before')).toEqual(true);
+    expect(result.includes('after')).toEqual(true);
   });
 
   it('caps length at maxChars', () => {
     const input = 'a'.repeat(2000);
-    assertEquals(trimReadme(input, 1500).length, 1500);
+    expect(trimReadme(input, 1500).length).toEqual(1500);
   });
 
   it('handles empty string', () => {
-    assertEquals(trimReadme(''), '');
+    expect(trimReadme('')).toEqual('');
   });
 });
 
 describe('processOutput', () => {
   it('returns trimmed text when within budget', async () => {
-    const result = await processOutput(
-      '  hello world  ',
-      50,
-      () => Promise.resolve('SHOULD_NOT_BE_CALLED'),
+    const result = await processOutput('  hello world  ', 50, () =>
+      Promise.resolve('SHOULD_NOT_BE_CALLED'),
     );
-    assertEquals(result, 'hello world');
+    expect(result).toEqual('hello world');
   });
 
   it('throws on too-short output', async () => {
-    let err: Error | null = null;
-    try {
-      await processOutput('hi', 50, () => Promise.resolve(''));
-    } catch (e) {
-      err = e as Error;
-    }
-    assertEquals(err !== null, true);
-    assertEquals(err!.message.toLowerCase().includes('too short'), true);
+    await expect(processOutput('hi', 50, () => Promise.resolve(''))).rejects.toThrow(/too short/i);
   });
 
   it('throws on empty output', async () => {
-    let err: Error | null = null;
-    try {
-      await processOutput('', 50, () => Promise.resolve(''));
-    } catch (e) {
-      err = e as Error;
-    }
-    assertEquals(err !== null, true);
+    await expect(processOutput('', 50, () => Promise.resolve(''))).rejects.toThrow();
   });
 
   it('retries once when too long, returns retry result if within budget', async () => {
@@ -162,14 +146,14 @@ describe('processOutput', () => {
     };
     const longText = 'これは長すぎる要約です。'.repeat(20);
     const result = await processOutput(longText, 30, retryFn);
-    assertEquals(retryCount, 1);
-    assertEquals(result, '短い要約です。');
+    expect(retryCount).toEqual(1);
+    expect(result).toEqual('短い要約です。');
   });
 
   it('falls back to truncateAtSentenceBoundary when retry still too long', async () => {
     const longText = 'これは長すぎる要約です。これは二番目の文です。'.repeat(5);
     const stillLong = 'これは最初の文です。これも長すぎます。'.repeat(5);
     const result = await processOutput(longText, 22, () => Promise.resolve(stillLong));
-    assertEquals(getWeightedLength(result) <= 22, true);
+    expect(getWeightedLength(result) <= 22).toEqual(true);
   });
 });

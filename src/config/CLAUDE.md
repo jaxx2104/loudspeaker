@@ -14,7 +14,7 @@ This directory handles environment variable configuration and validation.
 ```typescript
 export const config = {
   // ... existing config
-  newVariable: Deno.env.get('NEW_VARIABLE') ?? 'default_value',
+  newVariable: process.env.NEW_VARIABLE ?? 'default_value',
 } as const;
 ```
 
@@ -36,7 +36,7 @@ export function validateEnv(): void {
 
 ## Configuration Pattern
 
-- Use `Deno.env.get()` for environment access
+- Use `process.env` for environment access (Bun loads `.env` automatically)
 - Provide sensible defaults with `??` operator
 - Use `as const` for type inference
 - Validate at startup, fail fast on missing required vars

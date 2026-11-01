@@ -44,7 +44,7 @@ export async function postToX(message: string): Promise<void> {
       }
 
       if (attempt < MAX_RETRIES) {
-        const delay = INITIAL_DELAY_MS * Math.pow(2, attempt - 1);
+        const delay = INITIAL_DELAY_MS * 2 ** (attempt - 1);
         console.log(`[Twitter] Waiting ${delay}ms before retry...`);
         await sleep(delay);
       }

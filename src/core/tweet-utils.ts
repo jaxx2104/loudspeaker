@@ -10,16 +10,16 @@ export const NEWLINE_WEIGHT = 1;
  */
 function isDoubleWeightChar(code: number): boolean {
   return (
-    code > 0xFFFF || // Supplementary planes (emoji, CJK extensions B-F)
-    (code >= 0x1100 && code <= 0x115F) || // Hangul Jamo
-    (code >= 0x2E80 && code <= 0x4DBF) || // CJK Radicals, Kangxi, CJK Ext A
-    (code >= 0x3040 && code <= 0x33BF) || // Hiragana, Katakana, Bopomofo, CJK Marks
-    (code >= 0x4E00 && code <= 0x9FFF) || // CJK Unified Ideographs
-    (code >= 0xA000 && code <= 0xA4CF) || // Yi
-    (code >= 0xAC00 && code <= 0xD7FF) || // Hangul Syllables
-    (code >= 0xF900 && code <= 0xFAFF) || // CJK Compatibility Ideographs
-    (code >= 0xFE30 && code <= 0xFE6F) || // CJK Compatibility Forms
-    (code >= 0xFF00 && code <= 0xFFEF) // Fullwidth Forms
+    code > 0xffff || // Supplementary planes (emoji, CJK extensions B-F)
+    (code >= 0x1100 && code <= 0x115f) || // Hangul Jamo
+    (code >= 0x2e80 && code <= 0x4dbf) || // CJK Radicals, Kangxi, CJK Ext A
+    (code >= 0x3040 && code <= 0x33bf) || // Hiragana, Katakana, Bopomofo, CJK Marks
+    (code >= 0x4e00 && code <= 0x9fff) || // CJK Unified Ideographs
+    (code >= 0xa000 && code <= 0xa4cf) || // Yi
+    (code >= 0xac00 && code <= 0xd7ff) || // Hangul Syllables
+    (code >= 0xf900 && code <= 0xfaff) || // CJK Compatibility Ideographs
+    (code >= 0xfe30 && code <= 0xfe6f) || // CJK Compatibility Forms
+    (code >= 0xff00 && code <= 0xffef) // Fullwidth Forms
   );
 }
 
@@ -62,10 +62,7 @@ export function truncateToWeightedLength(text: string, maxWeight: number): strin
 const SENTENCE_ENDERS = new Set(['\u3002', '\uff0e', '\uff01', '\uff1f', '!', '?', '\n']);
 
 /** Truncate text at the last sentence-ender within the weighted budget. */
-export function truncateAtSentenceBoundary(
-  text: string,
-  maxWeight: number,
-): string {
+export function truncateAtSentenceBoundary(text: string, maxWeight: number): string {
   if (getWeightedLength(text) <= maxWeight) return text;
 
   let weight = 0;
