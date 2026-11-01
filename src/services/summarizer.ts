@@ -1,6 +1,6 @@
 import { mastra } from '../ai/agents.ts';
-import type { GenerateOptions, Message, ModelType, StarData } from '../types/index.ts';
 import { getWeightedLength, truncateAtSentenceBoundary } from '../core/tweet-utils.ts';
+import type { GenerateOptions, Message, ModelType, StarData } from '../types/index.ts';
 
 /** Strip noisy markdown chrome and cap length for prompt-friendliness. */
 export function trimReadme(readme: string, maxChars = 1500): string {
@@ -57,7 +57,7 @@ export async function summarizeRepository(
   bodyBudget: number,
   modelType: ModelType = 'openrouter',
 ): Promise<string> {
-  let agent;
+  let agent: ReturnType<typeof mastra.getAgent>;
   switch (modelType) {
     case 'openrouter':
       agent = mastra.getAgent('openrouterAgent');
@@ -87,7 +87,8 @@ export async function summarizeRepository(
         { role: 'assistant', content: initialText.trim() },
         {
           role: 'user',
-          content: `先ほどの出力は ${initialWeight} weighted 文字でした。` +
+          content:
+            `先ほどの出力は ${initialWeight} weighted 文字でした。` +
             `${bodyBudget} weighted 文字以内に短縮した日本語要約のみを返してください。`,
         },
       ];

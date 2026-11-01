@@ -1,9 +1,9 @@
-import { Agent } from '@mastra/core/agent';
 import { Mastra } from '@mastra/core';
-import { openrouter } from './providers/openrouter.ts';
+import { Agent } from '@mastra/core/agent';
+import { config } from '../config/env.ts';
 import { deepseek } from './providers/deepseek.ts';
 import { mistral } from './providers/mistral.ts';
-import { config } from '../config/env.ts';
+import { openrouter } from './providers/openrouter.ts';
 
 export const openrouterAgent = new Agent({
   name: 'openrouterAgent',

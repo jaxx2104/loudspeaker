@@ -19,7 +19,7 @@ This directory contains AI provider configurations and Mastra agent definitions.
 import { createNewProvider } from '@ai-sdk/newprovider';
 
 export const newprovider = createNewProvider({
-  apiKey: Deno.env.get('NEWPROVIDER_API_KEY'),
+  apiKey: process.env.NEWPROVIDER_API_KEY,
 });
 ```
 

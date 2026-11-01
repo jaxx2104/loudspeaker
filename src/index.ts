@@ -11,7 +11,7 @@ async function main(): Promise<void> {
     // Exit with error if all stars failed
     if (result.total > 0 && result.processed === 0 && result.failed > 0) {
       console.error('[Main] All stars failed to process');
-      Deno.exit(1);
+      process.exit(1);
     }
 
     // Log final status
@@ -22,7 +22,7 @@ async function main(): Promise<void> {
     }
   } catch (error) {
     console.error('[Main] Fatal error:', error);
-    Deno.exit(1);
+    process.exit(1);
   }
 }
 

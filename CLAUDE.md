@@ -5,23 +5,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ```bash
-# Run the application locally
-deno task start
+# Install dependencies (Bun version is pinned via mise: `mise install`)
+bun install
+
+# Run the application locally (.env is loaded automatically by Bun)
+bun run start
 
 # Run with file watching (development mode)
-deno task dev
+bun run dev
 
-# Run all Deno standard tests
-deno task test
+# Run all tests (bun:test)
+bun test
 
 # Type check all TypeScript files
-deno task check
+bun run check
 
-# Format code
-deno task fmt
+# Format code (Biome)
+bun run fmt
 
-# Lint code
-deno task lint
+# Lint code (Biome)
+bun run lint
+
+# Run everything CI runs (Biome check, type check, tests)
+bun run ci
 
 # Manual workflow trigger (GitHub Actions)
 # Go to Actions tab → Star to X Share → Run workflow
@@ -49,11 +55,12 @@ src/
 ├── config/          # Environment variable configuration and validation
 ├── core/            # Main processing logic orchestration
 ├── services/        # External API integrations (GitHub, X, AI summarizer)
-├── tests/           # Deno standard tests
+├── tests/           # bun:test tests
 ├── types/           # TypeScript type definitions
 └── index.ts         # Application entry point
 
 .github/workflows/
+├── ci.yml           # Biome, type check and tests on pull requests
 ├── star-to-x.yml    # Main workflow (runs every 15 minutes)
 └── keepalive.yml    # Prevents workflow suspension
 ```
@@ -62,16 +69,17 @@ See `README.md` for detailed architecture documentation.
 
 ## Testing
 
-- **Always run tests before committing**: `deno task test`
+- **Always run tests before committing**: `bun test`
 - Tests are located in `src/tests/`
-- Uses Deno standard testing library (`@std/assert`, `@std/testing/bdd`)
+- Uses Bun's built-in test runner (`bun:test`)
+- `src/tests/setup.ts` is preloaded via `bunfig.toml` and sets mock environment variables
 - See `src/tests/CLAUDE.md` for testing patterns
 
 ## Code Style
 
-- Follow Deno formatter settings defined in `deno.json`
-- Run `deno task fmt` to format code
-- Run `deno task lint` to check for issues
+- Follow the Biome settings defined in `biome.json`
+- Run `bun run fmt` to format code
+- Run `bun run lint` to check for issues
 - Use single quotes, 2-space indentation, semicolons
 
 ## Directory-Specific Guidance

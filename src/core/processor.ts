@@ -1,7 +1,7 @@
 import { getRecentStars } from '../services/github.ts';
+import { filterUnprocessedStars, markStarAsProcessed } from '../services/processed-stars.ts';
 import { summarizeRepository } from '../services/summarizer.ts';
 import { postToX } from '../services/twitter.ts';
-import { filterUnprocessedStars, markStarAsProcessed } from '../services/processed-stars.ts';
 import type { StarData } from '../types/index.ts';
 import {
   getWeightedLength,
@@ -22,12 +22,7 @@ const POST_PREFIX = (repo: string) => `I just starred ${repo} - `;
 
 /** Compute the weighted character budget for the AI-generated body. */
 export function computeBodyBudget(repo: string): number {
-  return (
-    MAX_TWEET_WEIGHT -
-    getWeightedLength(POST_PREFIX(repo)) -
-    NEWLINE_WEIGHT -
-    T_CO_URL_WEIGHT
-  );
+  return MAX_TWEET_WEIGHT - getWeightedLength(POST_PREFIX(repo)) - NEWLINE_WEIGHT - T_CO_URL_WEIGHT;
 }
 
 /** Build the final tweet text from repo, body, and url. */

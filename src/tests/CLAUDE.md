@@ -1,26 +1,29 @@
 # Tests
 
-This directory contains Deno standard tests for the application.
+This directory contains tests for the application, run with Bun's built-in test runner (`bun:test`).
 
 ## Files
 
+- `setup.ts` - Preloaded by `bun test` (see `bunfig.toml`); sets mock env vars and a temporary `PROCESSED_STARS_CACHE`
 - `config.test.ts` - Configuration validation tests
 - `core.test.ts` - Core processor logic tests
 - `services.test.ts` - Service layer tests
 - `types.test.ts` - Type definition tests
 - `integration.test.ts` - Integration tests
+- `processed-stars.test.ts` - Processed stars cache tests
+- `tweet-utils.test.ts` - Tweet length utility tests
 
 ## Running Tests
 
 ```bash
 # Run all tests
-deno task test
+bun test
 
 # Run specific test file
-deno test --allow-net --allow-env --allow-read src/tests/services.test.ts
+bun test src/tests/services.test.ts
 
-# Run with verbose output
-deno test --allow-net --allow-env --allow-read src/tests/ --reporter=verbose
+# Run tests whose name matches a pattern
+bun test -t 'trimReadme'
 ```
 
 ## Testing Patterns
@@ -28,8 +31,7 @@ deno test --allow-net --allow-env --allow-read src/tests/ --reporter=verbose
 ### Test Structure (BDD Style)
 
 ```typescript
-import { assertEquals, assertExists } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import { describe, expect, it } from 'bun:test';
 
 describe('ServiceName', () => {
   describe('functionName', () => {
@@ -41,7 +43,7 @@ describe('ServiceName', () => {
       const result = functionUnderTest(input);
 
       // Assert
-      assertEquals(result, expectedValue);
+      expect(result).toEqual(expectedValue);
     });
   });
 });
@@ -64,12 +66,19 @@ const mockStarData: StarData = {
 
 ### Assertions
 
-Common assertions from `@std/assert`:
+Common matchers from `bun:test` (Jest compatible):
 
-- `assertEquals(actual, expected)` - Strict equality
-- `assertExists(value)` - Not null/undefined
-- `assertThrows(fn)` - Function throws error
-- `assertRejects(asyncFn)` - Async function rejects
+- `expect(actual).toEqual(expected)` - Deep equality
+- `expect(actual).toBe(expected)` - Strict (`Object.is`) equality
+- `expect(value).not.toBeNil()` - Not null/undefined
+- `expect(fn).toThrow()` - Function throws error
+- `await expect(promise).rejects.toThrow()` - Promise rejects
+
+### Environment Variables
+
+Modules under `src/config` and `src/ai` validate env vars at import time, and Bun shares the
+module cache across test files. Use the shared `mockEnvVars` from `setup.ts` instead of
+defining per-file values.
 
 ## Adding New Tests
 
