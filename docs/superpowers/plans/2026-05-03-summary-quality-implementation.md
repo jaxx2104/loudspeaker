@@ -1,5 +1,9 @@
 # Summary Quality Improvements Implementation Plan
 
+> Note (2026-11-01): This document predates the migration from Deno to Bun (#6) and is kept as a historical record.
+> Read its commands as: `deno test ... <file>` → `bun test <file>`, `deno task fmt` / `lint` / `check` → `bun run fmt` / `lint` / `check`, `deno task start` → `bun run start`,
+> `@std/assert` / `@std/testing/bdd` → `bun:test`, and `deno.json` imports → `package.json` dependencies.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement the design from `docs/superpowers/specs/2026-05-03-summary-quality-design.md` — ground summaries in `description`, communicate explicit budget, sentence-boundary truncate, refresh model IDs.
